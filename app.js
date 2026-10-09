@@ -32,7 +32,7 @@ const fmtNum = (value) => new Intl.NumberFormat('ru-RU').format(Number(value || 
 const pluralRu = (value, forms) => { const n = Math.abs(Number(value || 0)); const index = n % 10 === 1 && n % 100 !== 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2; return forms[index]; };
 const fmtDate = (value) => { if (!value) return '—'; const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value).slice(0, 10) : d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' }); };
 const shortDate = (value) => { if (!value) return ''; const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value).slice(0, 10) : d.toISOString().slice(0, 10); };
-const nodeLabel = (node) => node?.label || node?.name || 'Без имени';
+const nodeLabel = (node) => node?.label || node?.name || 'без имени';
 
 function setStatus(message, error = false) { ui.status.textContent = message; ui.status.classList.toggle('is-error', error); }
 function setEnabled(enabled) {
@@ -55,8 +55,8 @@ function finishImportError(message) {
   if (ui.progressWrap) ui.progressWrap.hidden = true;
   setProgress(0);
   setImporting(false);
-  const safeMessage = String(message || 'Формат файла не распознан.');
-  setStatus(sourceModel ? 'Импорт не завершён. Текущая карта сохранена. ' + safeMessage : safeMessage, true);
+  const safeMessage = String(message || 'формат файла не распознан.');
+  setStatus(sourceModel ? 'импорт не завершён. текущая карта сохранена. ' + safeMessage : safeMessage, true);
 }
 function setProgress(percent) {
   const value = Math.max(0, Math.min(100, Number(percent) || 0));
@@ -73,8 +73,8 @@ function addOptions(select, entries, firstLabel) {
   (entries || []).forEach((entry) => { const option = document.createElement('option'); option.value = entry.id; option.textContent = entry.label || entry.name || entry.id; select.append(option); });
 }
 function populateControls(model) {
-  addOptions(ui.chatFilter, model.chats, 'Все чаты');
-  addOptions(ui.personFilter, model.participants, 'Все участники');
+  addOptions(ui.chatFilter, model.chats, 'все чаты');
+  addOptions(ui.personFilter, model.participants, 'все участники');
   ui.chatFilter.value = 'all'; ui.personFilter.value = 'all'; ui.fromDate.value = ''; ui.toDate.value = '';
   ui.fromDate.min = ''; ui.fromDate.max = ''; ui.toDate.min = ''; ui.toDate.max = '';
   ui.viewMode.value = 'auto'; ui.relationsOnly.checked = false;
@@ -83,7 +83,7 @@ function populateControls(model) {
   setDatasetLabel(model);
 }
 function setDatasetLabel(model) {
-  if (!model) { ui.datasetLabel.textContent = 'Файл не выбран'; return; }
+  if (!model) { ui.datasetLabel.textContent = 'файл не выбран'; return; }
   const count = model.stats?.messageCount || model.nodes?.reduce((sum, n) => sum + Number(n.messageCount || 0), 0) || 0;
   const filePrefix = activeFileName ? activeFileName + ' · ' : '';
   ui.datasetLabel.textContent = filePrefix + `${fmtNum(count)} ${pluralRu(count, ['сообщение', 'сообщения', 'сообщений'])} · ${fmtNum(model.nodes?.length || 0)} ${pluralRu(model.nodes?.length || 0, ['узел', 'узла', 'узлов'])}`;
@@ -122,7 +122,7 @@ function renderSliceSummary(model) {
   ];
   if (ui.fromDate.value || ui.toDate.value) parts.push((ui.fromDate.value || '…') + ' — ' + (ui.toDate.value || '…'));
   ui.sliceSummary.textContent = parts.join(' · ');
-  ui.sliceStatus.textContent = hasActiveFilters() ? 'Активный срез: ' + parts.join(' · ') : '';
+  ui.sliceStatus.textContent = hasActiveFilters() ? 'активный срез: ' + parts.join(' · ') : '';
   if (ui.resetFilters) ui.resetFilters.disabled = !hasActiveFilters();
 }
 
@@ -167,8 +167,8 @@ function renderGraph(model) {
   graphLayer = null; labelLayer = null;
   if (!model) {
     ui.atlasEmpty.hidden = false;
-    ui.atlasEmptyTitle.textContent = 'Здесь появится карта вашего архива';
-    ui.atlasEmptyCopy.textContent = 'Загрузите локальный экспорт, чтобы увидеть связи и периоды.';
+    ui.atlasEmptyTitle.textContent = 'здесь появится карта вашего архива';
+    ui.atlasEmptyCopy.textContent = 'загрузите локальный экспорт, чтобы увидеть связи и периоды.';
     ui.atlasFrame.classList.remove('is-ready');
     updateAltText(null, []);
     return;
@@ -183,8 +183,8 @@ function renderGraph(model) {
   if (selectedId && !displayNodes.some((node) => String(node.id) === String(selectedId))) selectedId = null;
   if (previewId && !displayNodes.some((node) => String(node.id) === String(previewId))) previewId = null;
   ui.atlasEmpty.hidden = displayNodes.length > 0;
-  ui.atlasEmptyTitle.textContent = displayNodes.length ? '' : 'В этом срезе нет точек';
-  ui.atlasEmptyCopy.textContent = displayNodes.length ? '' : (model.filterError === 'INVALID_DATE_RANGE' ? 'Дата начала позже даты окончания. Измените границы периода.' : (relationsOnly ? 'В выбранном срезе нет связей. Отключите режим «Только связи» или измените фильтры.' : 'Измените фильтры, чтобы вернуть точки на карту.'));
+  ui.atlasEmptyTitle.textContent = displayNodes.length ? '' : 'в этом срезе нет точек';
+  ui.atlasEmptyCopy.textContent = displayNodes.length ? '' : (model.filterError === 'INVALID_DATE_RANGE' ? 'дата начала позже даты окончания. измените границы периода.' : (relationsOnly ? 'в выбранном срезе нет связей. отключите режим «только связи» или измените фильтры.' : 'измените фильтры, чтобы вернуть точки на карту.'));
   if (!displayNodes.length) ui.atlasFrame.classList.remove('is-ready');
   const layer = svgEl('g', { transform: `translate(${pan.x} ${pan.y}) scale(${zoom})` });
   const labelsGroup = svgEl('g', { transform: `translate(${pan.x} ${pan.y}) scale(${zoom})` });
@@ -210,7 +210,7 @@ function renderGraph(model) {
     circle.addEventListener('click', () => commitSelection(node.id));
     circle.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); commitSelection(node.id); return; }
-      if (event.key === 'Escape') { selectedId = null; previewId = null; resetInspector(); if (ui.selectionStatus) ui.selectionStatus.textContent = 'Выбор снят.'; applySelection(); return; }
+      if (event.key === 'Escape') { selectedId = null; previewId = null; resetInspector(); if (ui.selectionStatus) ui.selectionStatus.textContent = 'выбор снят.'; applySelection(); return; }
       const direction = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
       if (!direction || displayNodes.length < 2) return;
       event.preventDefault();
@@ -247,10 +247,10 @@ function updateFocus(id) {
   if (!node) return;
   const relationCount = (visibleModel.edges || []).filter((edge) => String(edge.source) === String(id) || String(edge.target) === String(id)).reduce((sum, edge) => sum + Number(edge.count || 1), 0);
   ui.focusTitle.textContent = nodeLabel(node);
-  ui.focusCopy.textContent = `${node.type === 'participant' ? 'Участник' : 'Чат'} активен в ${fmtDate(node.firstDate)} — ${fmtDate(node.lastDate)}. Цвет показывает относительную активность; размер — объём сообщений.`;
+  ui.focusCopy.textContent = `${node.type === 'participant' ? 'участник' : 'чат'} активен в ${fmtDate(node.firstDate)} — ${fmtDate(node.lastDate)}. цвет показывает относительную активность; размер — объём сообщений.`;
   ui.focusMetrics.innerHTML = `<div><dt>сообщения</dt><dd>${fmtNum(node.messageCount || node.count)}</dd></div><div><dt>связи</dt><dd>${fmtNum(relationCount)}</dd></div><div><dt>период</dt><dd>${esc(fmtDate(node.firstDate))} — ${esc(fmtDate(node.lastDate))}</dd></div>`;
   if (ui.relationBreakdown) {
-    const relationNames = { reply: 'Ответы', mention: 'Упоминания', shared: 'Общие чаты', time: 'Близость по времени' };
+    const relationNames = { reply: 'ответы', mention: 'упоминания', shared: 'общие чаты', time: 'близость по времени' };
     const counts = new Map();
     (visibleModel.edges || []).forEach((edge) => {
       if (String(edge.source) !== String(id) && String(edge.target) !== String(id)) return;
@@ -259,13 +259,13 @@ function updateFocus(id) {
     });
     clear(ui.relationBreakdown);
     if (!counts.size) {
-      ui.relationBreakdown.textContent = 'Связей нет.';
+      ui.relationBreakdown.textContent = 'связей нет.';
     } else {
       [...counts.entries()].forEach(([type, count]) => {
         const row = document.createElement('div');
         row.className = 'relation-breakdown__row';
         const label = document.createElement('span');
-        label.textContent = relationNames[type] || 'Связи';
+        label.textContent = relationNames[type] || 'связи';
         const value = document.createElement('strong');
         value.textContent = fmtNum(count);
         row.append(label, value);
@@ -285,7 +285,7 @@ function commitSelection(id) {
   selectedId = String(id);
   previewId = null;
   updateFocus(id);
-  if (ui.selectionStatus) ui.selectionStatus.textContent = `Выбрано: ${nodeLabel(visibleModel?.nodes.find((node) => String(node.id) === String(id)))}`;
+  if (ui.selectionStatus) ui.selectionStatus.textContent = `выбрано: ${nodeLabel(visibleModel?.nodes.find((node) => String(node.id) === String(id)))}`;
   applySelection();
 }
 function clearPreview() {
@@ -316,22 +316,22 @@ function applySelection() {
   });
 }
 function updateAltText(model, nodes) {
-  if (!model) { ui.altText.textContent = 'Загрузите файл, чтобы получить текстовое описание сети.'; return; }
-  if (!nodes.length) { ui.altText.textContent = 'После фильтрации узлов не осталось. Измените срез или сбросьте фильтры.'; return; }
+  if (!model) { ui.altText.textContent = 'загрузите файл, чтобы получить текстовое описание сети.'; return; }
+  if (!nodes.length) { ui.altText.textContent = 'после фильтрации узлов не осталось. измените срез или сбросьте фильтры.'; return; }
   const edges = model.edges || [];
   const top = [...nodes].sort((a, b) => Number(b.messageCount || b.count) - Number(a.messageCount || a.count)).slice(0, 6);
-  const parts = [`В сети ${fmtNum(nodes.length)} узлов и ${fmtNum(edges.length)} связей.`];
-  parts.push(`Самые активные: ${top.map((n) => `${nodeLabel(n)} (${fmtNum(n.messageCount || n.count)})`).join(', ')}.`);
+  const parts = [`в сети ${fmtNum(nodes.length)} узлов и ${fmtNum(edges.length)} связей.`];
+  parts.push(`самые активные: ${top.map((n) => `${nodeLabel(n)} (${fmtNum(n.messageCount || n.count)})`).join(', ')}.`);
   const rels = edges.reduce((acc, edge) => { acc[edge.type || 'relation'] = (acc[edge.type || 'relation'] || 0) + 1; return acc; }, {});
   const relationNames = { reply: 'ответы', mention: 'упоминания', shared: 'общие чаты', time: 'близость по времени', relation: 'связи' };
-  parts.push(`Типы связей: ${Object.entries(rels).map(([key, value]) => `${relationNames[key] || 'связи'} — ${value}`).join(', ')}.`);
+  parts.push(`типы связей: ${Object.entries(rels).map(([key, value]) => `${relationNames[key] || 'связи'} — ${value}`).join(', ')}.`);
   ui.altText.textContent = parts.join(' ');
 }
 
 function renderTimeline(model) {
   clear(ui.timeline);
   const periods = model?.periods || [];
-  if (!periods.length) { ui.timelineRange.textContent = '—'; if (ui.timelineEmpty) { ui.timelineEmpty.hidden = false; ui.timelineEmpty.textContent = model ? 'В выбранном срезе нет дат для шкалы.' : 'Загрузите экспорт, чтобы увидеть периоды активности.'; } return; }
+  if (!periods.length) { ui.timelineRange.textContent = '—'; if (ui.timelineEmpty) { ui.timelineEmpty.hidden = false; ui.timelineEmpty.textContent = model ? 'в выбранном срезе нет дат для шкалы.' : 'загрузите экспорт, чтобы увидеть периоды активности.'; } return; }
   if (ui.timelineEmpty) ui.timelineEmpty.hidden = true;
   const starts = periods.map((p) => new Date(p.start).getTime()).filter(Number.isFinite); const ends = periods.map((p) => new Date(p.end || p.start).getTime()).filter(Number.isFinite);
   const min = Math.min(...starts); const max = Math.max(...ends, min + 86400000); const span = Math.max(max - min, 86400000); ui.timelineRange.textContent = `${shortDate(new Date(min))} — ${shortDate(new Date(max))}`;
@@ -351,7 +351,7 @@ function renderTimeline(model) {
       class: `timeline-point${ratio > .7 ? ' is-peak' : ''}`,
       role: 'button',
       tabindex: '0',
-      'aria-label': `Выбрать период ${periodFrom} — ${periodTo}`,
+      'aria-label': `выбрать период ${periodFrom} — ${periodTo}`,
       'data-from': periodFrom,
       'data-to': periodTo,
     });
@@ -385,13 +385,13 @@ function render() {
     renderGraph(null);
     renderTimeline(null);
     resetInspector();
-    setStatus(error.userMessage || error.message || 'Не удалось применить фильтр.', true);
+    setStatus(error.userMessage || error.message || 'не удалось применить фильтр.', true);
     return;
   }
   setDatasetLabel(visibleModel);
   renderSliceSummary(visibleModel);
-  if (visibleModel?.filterError === 'INVALID_DATE_RANGE') setStatus('Дата начала позже даты окончания. Измените границы периода.', true);
-  else if (ui.status.classList.contains('is-error')) setStatus('Срез обновлён.');
+  if (visibleModel?.filterError === 'INVALID_DATE_RANGE') setStatus('дата начала позже даты окончания. измените границы периода.', true);
+  else if (ui.status.classList.contains('is-error')) setStatus('срез обновлён.');
   renderGraph(visibleModel);
   renderTimeline(visibleModel);
   if (selectedId && visibleModel?.nodes.some((n) => String(n.id) === String(selectedId))) updateFocus(selectedId);
@@ -399,10 +399,10 @@ function render() {
 }
 function resetInspector() {
   const hasVisibleNodes = Boolean(visibleModel?.nodes?.length);
-  ui.focusTitle.textContent = hasVisibleNodes ? 'Выберите точку на карте' : (sourceModel ? 'В этом срезе нет узлов' : 'Выберите точку на карте');
-  ui.focusCopy.textContent = hasVisibleNodes ? 'Наведите на точку, чтобы увидеть период и счётчики. Тексты сообщений скрыты.' : (sourceModel ? 'Измените фильтры, чтобы вернуть точки на карту.' : 'Наведите на точку, чтобы увидеть период и счётчики. Тексты сообщений скрыты.');
+  ui.focusTitle.textContent = hasVisibleNodes ? 'выберите точку на карте' : (sourceModel ? 'в этом срезе нет узлов' : 'выберите точку на карте');
+  ui.focusCopy.textContent = hasVisibleNodes ? 'наведите на точку, чтобы увидеть период и счётчики. тексты сообщений скрыты.' : (sourceModel ? 'измените фильтры, чтобы вернуть точки на карту.' : 'наведите на точку, чтобы увидеть период и счётчики. тексты сообщений скрыты.');
   ui.focusMetrics.innerHTML = '<div><dt>сообщения</dt><dd>—</dd></div><div><dt>связи</dt><dd>—</dd></div><div><dt>период</dt><dd>—</dd></div>';
-  if (ui.relationBreakdown) ui.relationBreakdown.textContent = 'Выберите точку, чтобы увидеть типы связей.';
+  if (ui.relationBreakdown) ui.relationBreakdown.textContent = 'выберите точку, чтобы увидеть типы связей.';
 }
 
 function updateScale() { ui.scale.textContent = `масштаб ${zoom.toFixed(1)}×`; ui.zoomReset.textContent = `${zoom.toFixed(1)}×`; }
@@ -411,20 +411,20 @@ function applyModel(model) {
   const nextModel = model?.model || model;
   previewId = null;
   animateNextRender = true;
-  if (!nextModel || !Array.isArray(nextModel.nodes) || !nextModel.nodes.length) throw new Error('В файле не найдено сообщений. Нужен экспорт Telegram Desktop с массивом messages.');
+  if (!nextModel || !Array.isArray(nextModel.nodes) || !nextModel.nodes.length) throw new Error('в файле не найдено сообщений. нужен экспорт Telegram Desktop с массивом messages.');
   sourceModel = nextModel;
   activeFileName = pendingFileName || activeFileName;
   pendingFileName = '';
-  populateControls(sourceModel); setEnabled(true); resetView(); setStatus(`Готово: ${fmtNum(sourceModel.stats?.messageCount || sourceModel.nodes.reduce((sum, n) => sum + Number(n.messageCount || n.count || 0), 0))} сообщений сведено в агрегаты.`); render();
+  populateControls(sourceModel); setEnabled(true); resetView(); setStatus(`готово: ${fmtNum(sourceModel.stats?.messageCount || sourceModel.nodes.reduce((sum, n) => sum + Number(n.messageCount || n.count || 0), 0))} сообщений сведено в агрегаты.`); render();
 }
 function parseAndRender(text) {
   let parsed;
-  try { parsed = JSON.parse(text); } catch { throw new Error('Не удалось прочитать JSON. Проверьте, что файл не повреждён и сохранён в формате UTF-8.'); }
+  try { parsed = JSON.parse(text); } catch { throw new Error('не удалось прочитать JSON. проверьте, что файл не повреждён и сохранён в формате UTF-8.'); }
   const result = parseExport(parsed, {
     onProgress: ({ phase, ratio }) => {
       if (phase === 'normalizing') {
         const pct = Math.round(Math.max(0, Math.min(1, ratio)) * 100);
-        ui.progressLabel.textContent = 'Сводим связи'; setProgress(pct);
+        ui.progressLabel.textContent = 'сводим связи'; setProgress(pct);
       }
     }
   });
@@ -438,15 +438,15 @@ function cancelImport({ announce = true } = {}) {
   if (ui.progressWrap) ui.progressWrap.hidden = true;
   setImporting(false);
   pendingFileName = '';
-  if (announce && wasImporting) setStatus(sourceModel ? 'Импорт отменён. Текущая карта сохранена.' : 'Импорт отменён.');
+  if (announce && wasImporting) setStatus(sourceModel ? 'импорт отменён. текущая карта сохранена.' : 'импорт отменён.');
 }
 function readFile(file) {
   if (!file) return;
   cancelImport({ announce: false });
-  if (file.size > 250 * 1024 * 1024) { setStatus('Файл больше 250 МБ. Выберите меньший JSON или разбейте экспорт по чатам.', true); return; }
+  if (file.size > 250 * 1024 * 1024) { finishImportError('файл больше 250 МБ. выберите меньший JSON или разбейте экспорт по чатам.'); return; }
   pendingFileName = file.name || '';
   const token = importToken;
-  ui.progressWrap.hidden = false; setProgress(0); ui.progressLabel.textContent = 'Читаем файл'; setImporting(true); setStatus('Файл остаётся в браузере — готовим карту…');
+  ui.progressWrap.hidden = false; setProgress(0); ui.progressLabel.textContent = 'читаем файл'; setImporting(true); setStatus('файл остаётся в браузере — готовим карту…');
   let worker = null;
   if (typeof Worker === 'function') {
     try { worker = new Worker('./import-worker.js', { type: 'module' }); } catch { worker = null; }
@@ -456,16 +456,16 @@ function readFile(file) {
     worker.onmessage = (event) => {
       if (token !== importToken) { worker.terminate(); return; }
       const payload = event.data || {};
-      if (payload.type === 'progress') { ui.progressLabel.textContent = payload.label || 'Разбираем файл'; setProgress(payload.percent || 0); return; }
+      if (payload.type === 'progress') { ui.progressLabel.textContent = payload.label || 'разбираем файл'; setProgress(payload.percent || 0); return; }
       activeWorker = null; worker.terminate();
-      if (payload.type === 'error') { finishImportError(payload.message || 'Формат файла не распознан.'); return; }
-      try { applyModel(payload.model); setImporting(false); setProgress(100); ui.progressLabel.textContent = 'Готово'; setTimeout(() => { if (token === importToken) ui.progressWrap.hidden = true; }, 900); }
-      catch (error) { finishImportError(error.userMessage || error.message || 'Формат файла не распознан.'); }
+      if (payload.type === 'error') { finishImportError(payload.message || 'формат файла не распознан.'); return; }
+      try { applyModel(payload.model); setImporting(false); setProgress(100); ui.progressLabel.textContent = 'готово'; setTimeout(() => { if (token === importToken) ui.progressWrap.hidden = true; }, 900); }
+      catch (error) { finishImportError(error.userMessage || error.message || 'формат файла не распознан.'); }
     };
-    worker.onerror = () => { if (token !== importToken) return; finishImportError('Не удалось обработать файл. Попробуйте выбрать его ещё раз.'); };
+    worker.onerror = () => { if (token !== importToken) return; finishImportError('не удалось обработать файл. попробуйте выбрать его ещё раз.'); };
     const reader = new FileReader(); activeReader = reader;
-    reader.onprogress = (event) => { if (token !== importToken || !event.lengthComputable) return; const pct = Math.round(event.loaded / event.total * 100); ui.progressLabel.textContent = 'Читаем файл'; setProgress(pct); };
-    reader.onerror = () => { if (token !== importToken) return; finishImportError('Не удалось прочитать файл. Попробуйте выбрать его ещё раз.'); };
+    reader.onprogress = (event) => { if (token !== importToken || !event.lengthComputable) return; const pct = Math.round(event.loaded / event.total * 100); ui.progressLabel.textContent = 'читаем файл'; setProgress(pct); };
+    reader.onerror = () => { if (token !== importToken) return; finishImportError('не удалось прочитать файл. попробуйте выбрать его ещё раз.'); };
     reader.onabort = () => { if (token === importToken) { activeReader = null; ui.progressWrap.hidden = true; setImporting(false); } };
     reader.onload = () => { if (token === importToken) { activeReader = null; worker.postMessage({ buffer: reader.result }, [reader.result]); } };
     reader.readAsArrayBuffer(file);
@@ -474,23 +474,23 @@ function readFile(file) {
   const reader = new FileReader();
   activeReader = reader;
   reader.onprogress = (event) => { if (token !== importToken || !event.lengthComputable) return; const pct = Math.round(event.loaded / event.total * 100); setProgress(pct); };
-  reader.onerror = () => { if (token !== importToken) return; finishImportError('Не удалось прочитать файл. Попробуйте выбрать его ещё раз.'); };
+  reader.onerror = () => { if (token !== importToken) return; finishImportError('не удалось прочитать файл. попробуйте выбрать его ещё раз.'); };
   reader.onabort = () => { if (token === importToken) { activeReader = null; ui.progressWrap.hidden = true; setImporting(false); } };
   reader.onload = () => {
     if (token !== importToken) return;
     activeReader = null;
-    try { parseAndRender(String(reader.result)); setImporting(false); setProgress(100); ui.progressLabel.textContent = 'Готово'; setTimeout(() => { if (token === importToken) ui.progressWrap.hidden = true; }, 900); }
-    catch (error) { finishImportError(error.userMessage || error.message || 'Формат файла не распознан.'); }
+    try { parseAndRender(String(reader.result)); setImporting(false); setProgress(100); ui.progressLabel.textContent = 'готово'; setTimeout(() => { if (token === importToken) ui.progressWrap.hidden = true; }, 900); }
+    catch (error) { finishImportError(error.userMessage || error.message || 'формат файла не распознан.'); }
   };
   reader.readAsText(file);
 }
 
 function clearData() {
   cancelImport({ announce: false });
-  sourceModel = null; visibleModel = null; selectedId = null; previewId = null; activeFileName = ''; pendingFileName = ''; ui.file.value = ''; ui.datasetLabel.textContent = 'Файл не выбран'; setEnabled(false);
-  ui.chatFilter.innerHTML = '<option value="all">Все чаты</option>'; ui.personFilter.innerHTML = '<option value="all">Все участники</option>'; ui.fromDate.value = ''; ui.toDate.value = ''; ui.fromDate.min = ''; ui.fromDate.max = ''; ui.toDate.min = ''; ui.toDate.max = '';
+  sourceModel = null; visibleModel = null; selectedId = null; previewId = null; activeFileName = ''; pendingFileName = ''; ui.file.value = ''; ui.datasetLabel.textContent = 'файл не выбран'; setEnabled(false);
+  ui.chatFilter.innerHTML = '<option value="all">все чаты</option>'; ui.personFilter.innerHTML = '<option value="all">все участники</option>'; ui.fromDate.value = ''; ui.toDate.value = ''; ui.fromDate.min = ''; ui.fromDate.max = ''; ui.toDate.min = ''; ui.toDate.max = '';
   ui.viewMode.value = 'auto'; ui.relationsOnly.checked = false;
-  animateNextRender = false; clearTimeout(introTimer); ui.atlasFrame.classList.remove('is-ready'); ui.progressWrap.hidden = true; setProgress(0); setStatus('Данные удалены из памяти страницы.'); zoom = 1; pan = { x: 0, y: 0 }; updateScale(); resetInspector(); renderSliceSummary(null); updateAltText(null, []); renderGraph(null); renderTimeline(null);
+  animateNextRender = false; clearTimeout(introTimer); ui.atlasFrame.classList.remove('is-ready'); ui.progressWrap.hidden = true; setProgress(0); setStatus('данные удалены из памяти страницы.'); zoom = 1; pan = { x: 0, y: 0 }; updateScale(); resetInspector(); renderSliceSummary(null); updateAltText(null, []); renderGraph(null); renderTimeline(null);
 }
 function download(name, type, body) { const blob = body instanceof Blob ? body : new Blob([body], { type }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = name; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
 function exportableSvg() {
@@ -522,7 +522,7 @@ function exportPng() {
     ctx.fillStyle = '#E7DFC8'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     canvas.toBlob((blob) => { if (blob && token === importToken && version === renderVersion && visibleModel) download('telegram-constellation.png', 'image/png', blob); });
   };
-  image.onerror = () => { if (token === importToken && version === renderVersion) setStatus('Не удалось подготовить PNG. Скачайте карту в SVG.', true); };
+  image.onerror = () => { if (token === importToken && version === renderVersion) setStatus('не удалось подготовить PNG. скачайте карту в SVG.', true); };
   image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;
 }
 
@@ -560,7 +560,7 @@ function wire() {
   ui.atlasSvg.addEventListener('pointerdown', (event) => { if (event.target.closest('.node')) return; drag = { x: event.clientX, y: event.clientY, panX: pan.x, panY: pan.y }; ui.atlasSvg.setPointerCapture(event.pointerId); });
   ui.atlasSvg.addEventListener('pointermove', (event) => { if (!drag) return; const rect = ui.atlasSvg.getBoundingClientRect(); const sx = rect.width ? 1000 / rect.width : 1; const sy = rect.height ? 610 / rect.height : 1; pan.x = drag.panX + (event.clientX - drag.x) * sx; pan.y = drag.panY + (event.clientY - drag.y) * sy; updateViewport(); renderVersion += 1; });
   ['pointerup', 'pointercancel'].forEach((name) => ui.atlasSvg.addEventListener(name, () => { drag = null; }));
-  ui.atlasSvg.addEventListener('keydown', (event) => { if (event.key === 'Escape') { selectedId = null; previewId = null; resetInspector(); if (ui.selectionStatus) ui.selectionStatus.textContent = 'Выбор снят.'; applySelection(); } });
+  ui.atlasSvg.addEventListener('keydown', (event) => { if (event.key === 'Escape') { selectedId = null; previewId = null; resetInspector(); if (ui.selectionStatus) ui.selectionStatus.textContent = 'выбор снят.'; applySelection(); } });
 }
 
 buildGrid(); wire(); setEnabled(false); setImporting(false);

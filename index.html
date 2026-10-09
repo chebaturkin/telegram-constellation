@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="локальный визуальный атлас Telegram-экспортов. файлы остаются в браузере." />
+  <meta name="theme-color" content="#10212B" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'none'; form-action 'none';" />
+  <title>Telegram Constellation — атлас переписок</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="masthead">
+      <div class="masthead__row">
+        <div>
+          <h1>Telegram Constellation</h1>
+          <p class="masthead__dek">визуальный указатель чатов, участников и периодов из вашего локального экспорта.</p>
+        </div>
+        <div class="privacy-stamp" role="note">
+          <span><strong>файл остаётся в браузере.</strong><br />мы не отправляем его на сервер.</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout" id="main-content">
+      <aside class="rail" aria-label="импорт и фильтры">
+        <section class="rail-section rail-section--import">
+          <h2>загрузите архив</h2>
+          <p class="section-copy">выберите <span class="mono">result.json</span> из Telegram Desktop. в карте остаются имена, даты и счётчики.</p>
+          <label class="dropzone" id="dropzone" for="file-input" tabindex="0">
+            <span class="dropzone__glyph" aria-hidden="true">＋</span>
+            <span class="dropzone__title">выберите JSON</span>
+            <span class="dropzone__hint">или перетащите его сюда</span>
+            <input id="file-input" type="file" accept="application/json,.json" hidden />
+          </label>
+          <div class="progress-wrap" id="progress-wrap" hidden>
+            <div class="progress-label"><span id="progress-label">читаем файл</span><span id="progress-percent">0%</span></div>
+            <div class="progress-track" id="progress-track" role="progressbar" aria-label="чтение файла" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="progress-bar"></span></div>
+            <button class="button button--quiet progress-cancel" id="cancel-import" type="button" hidden>отменить</button>
+          </div>
+          <div class="status" id="status" role="status" aria-live="polite">файл ещё не выбран.</div>
+        </section>
+
+        <section class="rail-section" aria-labelledby="view-heading">
+          <h2 id="view-heading">параметры карты</h2>
+          <label class="field-label" for="view-mode">узлы</label>
+          <select class="field-control" id="view-mode" disabled>
+            <option value="auto">авто</option>
+            <option value="chats">чаты</option>
+            <option value="participants">участники</option>
+          </select>
+          <label class="check-row"><input id="relations-only" type="checkbox" disabled /><span>только связи</span></label>
+          <div class="button-row">
+            <button class="button button--quiet" id="reset-view" type="button" disabled>сбросить вид</button>
+            <button class="button button--quiet" id="clear-data" type="button" disabled>удалить данные</button>
+          </div>
+        </section>
+
+        <section class="rail-section" aria-labelledby="filters-heading">
+          <h2 id="filters-heading">фильтры</h2>
+          <label class="field-label" for="chat-filter">чат</label>
+          <select class="field-control" id="chat-filter" disabled><option value="all">все чаты</option></select>
+          <label class="field-label" for="person-filter">участник</label>
+          <select class="field-control" id="person-filter" disabled><option value="all">все участники</option></select>
+          <div class="date-fields">
+            <div><label class="field-label" for="from-date">с</label><input class="field-control" id="from-date" type="date" disabled /></div>
+            <div><label class="field-label" for="to-date">по</label><input class="field-control" id="to-date" type="date" disabled /></div>
+          </div>
+          <button class="button button--quiet filter-reset" id="reset-filters" type="button" disabled>сбросить фильтры</button>
+        </section>
+
+        <section class="rail-section rail-section--legend" aria-labelledby="legend-heading">
+          <h2 id="legend-heading">как читать карту</h2>
+          <div class="legend-list">
+            <div class="legend-item"><span class="legend-dot legend-dot--rust"></span><span>более активный узел</span></div>
+            <div class="legend-item"><span class="legend-dot legend-dot--blue"></span><span>менее активный узел</span></div>
+            <div class="legend-item"><span class="legend-line legend-line--reply"></span><span>ответы</span></div>
+            <div class="legend-item"><span class="legend-line legend-line--mention"></span><span>упоминания</span></div>
+            <div class="legend-item"><span class="legend-line legend-line--shared"></span><span>общие чаты</span></div>
+            <div class="legend-item"><span class="legend-line legend-line--time"></span><span>близость по времени</span></div>
+            <div class="legend-item"><span class="legend-radius"></span><span>размер = число сообщений</span></div>
+          </div>
+          <p class="legend-note">колесо меняет масштаб, перетаскивание двигает карту. к точке можно перейти клавишей Tab.</p>
+        </section>
+      </aside>
+
+      <div class="atlas-column">
+        <section class="atlas-panel" aria-labelledby="atlas-heading">
+          <div class="atlas-panel__head">
+            <div>
+              <div class="atlas-summary"><span id="dataset-label">файл не выбран</span><span id="slice-summary"></span></div>
+              <h2 id="atlas-heading">карта связей</h2>
+              <div class="slice-status" id="slice-status" role="status" aria-live="polite"></div>
+            </div>
+            <div class="atlas-actions">
+              <button class="button" id="export-svg" type="button" disabled>скачать SVG</button>
+              <button class="button" id="export-png" type="button" disabled>скачать PNG</button>
+            </div>
+          </div>
+          <div class="atlas-frame" id="atlas-frame">
+            <svg id="atlas-svg" viewBox="0 0 1000 610" role="group" aria-labelledby="atlas-heading atlas-caption" tabindex="0">
+              <desc id="atlas-caption">визуальная сеть чатов и участников. загрузите локальный JSON, чтобы увидеть узлы и связи.</desc>
+              <g id="grid-layer"></g>
+              <g id="graph-layer"></g>
+              <g id="labels-layer"></g>
+            </svg>
+            <div class="atlas-empty" id="atlas-empty">
+              <p class="atlas-empty__title" id="atlas-empty-title">здесь появится карта вашего архива</p>
+              <p id="atlas-empty-copy">загрузите локальный экспорт, чтобы увидеть связи и периоды.</p>
+            </div>
+          </div>
+          <div class="atlas-footer">
+            <div class="atlas-scale mono" id="atlas-scale">масштаб 1.0×</div>
+            <div class="zoom-controls" aria-label="масштаб карты">
+              <button class="zoom-button" id="zoom-out" type="button" disabled aria-label="уменьшить масштаб">−</button>
+              <button class="zoom-button zoom-button--readout" id="zoom-reset" type="button" disabled aria-label="сбросить масштаб">1×</button>
+              <button class="zoom-button" id="zoom-in" type="button" disabled aria-label="увеличить масштаб">+</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="timeline-section" aria-labelledby="timeline-heading">
+          <div class="timeline-head"><div><h2 id="timeline-heading">когда происходили разговоры</h2></div><div class="timeline-range mono" id="timeline-range">—</div></div>
+          <div class="timeline-frame"><svg id="timeline-svg" viewBox="0 0 1200 120" role="img" aria-label="временная шкала активности"><g id="timeline-layer"></g></svg><p class="timeline-empty" id="timeline-empty">загрузите экспорт, чтобы увидеть периоды активности.</p></div>
+        </section>
+      </div>
+
+      <aside class="inspector" aria-label="описание выбранного узла">
+        <section class="inspector-section inspector-section--focus">
+          <h2 id="focus-title">выберите точку на карте</h2>
+          <p id="focus-copy">наведите на точку, чтобы увидеть период и счётчики. тексты сообщений скрыты.</p>
+          <div class="sr-only" id="selection-status" role="status" aria-live="polite"></div>
+          <dl class="metrics" id="focus-metrics">
+            <div><dt>сообщения</dt><dd>—</dd></div>
+            <div><dt>связи</dt><dd>—</dd></div>
+            <div><dt>период</dt><dd>—</dd></div>
+          </dl>
+          <div class="relation-breakdown" id="relation-breakdown" aria-live="polite"></div>
+        </section>
+        <section class="inspector-section">
+          <h2>текстовое описание</h2>
+          <div class="alt-text" id="alt-text">загрузите файл, чтобы получить текстовое описание сети.</div>
+        </section>
+        <section class="inspector-section inspector-section--meta">
+          <h2 class="sr-only">о данных</h2>
+          <p class="meta-copy">тексты сообщений не выводятся. чтобы очистить карту, нажмите «удалить данные».</p>
+        </section>
+      </aside>
+    </main>
+
+  </div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

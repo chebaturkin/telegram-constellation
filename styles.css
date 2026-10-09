@@ -115,9 +115,6 @@ h2 { font-size: 1.55rem; line-height: 1.05; font-weight: 500; letter-spacing: -.
 .metrics div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--rule); }
 .metrics dt { color: var(--muted); font-size: .84rem; }
 .metrics dd { margin: 0; font-family: var(--mono); font-size: .74rem; }
-.relation-breakdown { margin-top: 15px; border-top: 1px solid var(--rule); color: var(--graphite); font-size: .78rem; }
-.relation-breakdown__row { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--rule); }
-.relation-breakdown__row strong { font-family: var(--mono); font-size: .72rem; font-weight: 400; }
 .relation-breakdown:empty { display: none; }
 .relation-breakdown { margin-top: 17px; border-top: 1px solid var(--rule); color: var(--graphite); font-size: .82rem; }
 .relation-breakdown__row { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--rule); }
@@ -135,8 +132,6 @@ h2 { font-size: 1.55rem; line-height: 1.05; font-weight: 500; letter-spacing: -.
 .timeline-bar.is-peak { stroke: var(--rust); opacity: .9; }
 .timeline-point { fill: var(--blue); vector-effect: non-scaling-stroke; }
 .timeline-point.is-peak { fill: var(--rust); }
-.timeline-point { cursor: pointer; outline: none; }
-.timeline-point:hover, .timeline-point:focus { stroke: var(--night); stroke-width: 2; }
 .timeline-point { cursor: pointer; transition: r .16s ease, stroke .16s ease; }
 .timeline-point:hover, .timeline-point:focus { stroke: var(--night); stroke-width: 2; outline: none; }
 .timeline-label { fill: var(--graphite); font-family: var(--mono); font-size: 11px; }

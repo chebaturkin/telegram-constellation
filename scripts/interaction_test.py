@@ -13,12 +13,13 @@ with sync_playwright() as p:
     page.goto(f"http://127.0.0.1:{PORT}/index.html")
     page.wait_for_load_state("networkidle")
     page.locator("#file-input").set_input_files(str(FIXTURE))
-    page.wait_for_function("document.querySelector('#dataset-label').textContent.includes('сообщений')")
+    page.locator("#atlas-svg .node").first.wait_for()
+    assert "result-small.json" in page.locator("#dataset-label").inner_text()
 
     before_nodes = page.locator("#atlas-svg .node").count()
     before_summary = page.locator("#dataset-label").inner_text()
     page.locator("#file-input").set_input_files(str(INVALID))
-    page.wait_for_function("document.querySelector('#status').classList.contains('is-error')")
+    page.locator("#status.is-error").wait_for()
     assert page.locator("#atlas-svg .node").count() == before_nodes
     assert page.locator("#dataset-label").inner_text() == before_summary
     assert "текущая карта сохранена" in page.locator("#status").inner_text().lower()
@@ -26,7 +27,7 @@ with sync_playwright() as p:
     node = page.locator("#atlas-svg .node").first
     node.focus()
     focused_id = node.get_attribute("data-node-id")
-    assert page.locator("#focus-title").inner_text() != "Выберите точку на карте"
+    assert page.locator("#focus-title").inner_text() != "выберите точку на карте"
     assert page.evaluate("document.activeElement?.getAttribute('data-node-id')") == focused_id
     assert page.locator("#relation-breakdown").inner_text() != ""
 
@@ -57,7 +58,7 @@ with sync_playwright() as p:
     assert page.locator("#to-date").input_value() == ""
 
     page.locator("#clear-data").click()
-    assert "Загрузите файл" in page.locator("#alt-text").inner_text()
-    assert page.locator("#focus-title").inner_text() == "Выберите точку на карте"
+    assert "загрузите файл" in page.locator("#alt-text").inner_text()
+    assert page.locator("#focus-title").inner_text() == "выберите точку на карте"
 
     browser.close()

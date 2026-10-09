@@ -1,0 +1,13 @@
+{
+  "chats": { "list": [
+    { "id": 101, "type": "private_supergroup", "name": "Редакция атласа", "messages": [
+      { "id": 1, "from": "Алексей", "from_id": "user-1", "date": "2026-02-02T10:00:00Z", "text": "Доброе утро" },
+      { "id": 2, "from": "Мария", "from_id": "user-2", "date": "2026-02-02T10:04:00Z", "reply_to_message_id": 1, "text": "@Алексей, вижу" },
+      { "id": 3, "from": "Олег", "from_id": "user-3", "date": "2026-02-18T12:40:00Z", "text": "Сверил цифры" }
+    ] },
+    { "id": 102, "type": "group", "name": "Наброски", "messages": [
+      { "id": 4, "from": "Алексей", "from_id": "user-1", "date": "2026-03-04T09:15:00Z", "text": "Перенёс заметки" },
+      { "id": 5, "from": "Мария", "from_id": "user-2", "date": "2026-03-04T09:19:00Z", "text": "Готово" }
+    ] }
+  ] }
+}
