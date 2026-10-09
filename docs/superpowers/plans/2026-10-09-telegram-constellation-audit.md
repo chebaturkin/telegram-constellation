@@ -62,7 +62,7 @@ function finishImportError(error) {
 - [ ] **Step 2: store and render the selected file name.** Add `<span id="dataset-file">файл не выбран</span>` near the summary, set it from `file.name`, and clear it only in `clearData()`.
 - [ ] **Step 3: make `exportableSvg()` strip all `aria-*`, `role`, `tabindex` and `data-*` attributes recursively before serialization. Keep visible labels and `<title>` elements.
 - [ ] **Step 4: add a focused interaction assertion that an SVG download payload contains no `aria-`, `role=`, `tabindex` or `data-` attributes and no fixture message body.**
-- [ ] **Step 5: run the interaction test and `node --test scripts/data-tests.mjs`; both must pass.
+- [ ] **Step 5: run the interaction test and `node --test scripts/data-tests.mjs`; both must pass.**
 - [ ] **Step 6: commit with `git add app.js index.html styles.css scripts && git commit -m "fix: preserve active atlas during failed imports"`.**
 
 ### Task 3: expose coherent slice state, timeline controls and relation detail
@@ -98,7 +98,7 @@ function finishImportError(error) {
 - [ ] **Step 1: rewrite user-facing Russian strings with lowercase sentence starts and direct actions.** Preserve proper names, code and exact file names. Keep privacy wording factual: local browser processing, no network import, aggregate-only model.
 - [ ] **Step 2: add a CSP meta tag to `index.html` allowing only self-hosted scripts/styles/fonts, `data:`/`blob:` images for export, self workers and no `connect-src`/object sources.**
 - [ ] **Step 3: rewrite README as the project landing page with GitHub Pages URL placeholder-free after publication, local run command, supported export shapes, privacy boundaries, limits and verification commands.
-- [ ] **Step 4: synchronize design rules, QA checklist and specs with actual behavior: rollback preserves an existing map, timeline periods are buttons, inspector lists relation types, and SVG export is metadata-clean.
+- [ ] **Step 4: synchronize design rules, QA checklist and specs with actual behavior: rollback preserves an existing map, timeline periods are buttons, inspector lists relation types, and SVG export is metadata-clean.**
 - [ ] **Step 5: extend `design-copy-check.mjs` with the final forbidden legacy labels and required privacy phrases, then run `node scripts/design-copy-check.mjs`.
 - [ ] **Step 6: add a workflow that uploads the repository root with `actions/upload-pages-artifact@v3` and deploys with `actions/deploy-pages@v4` on pushes to `main`; add `.nojekyll` so static asset paths are served as-is.
 - [ ] **Step 7: run the complete local checks and commit with `git add . && git commit -m "docs: align constellation copy and Pages release"`.**
