@@ -39,6 +39,14 @@ with sync_playwright() as p:
     assert page.locator("#person-filter").input_value() == "all"
     assert page.locator("#atlas-svg .node").count() == all_nodes
 
+    with page.expect_download() as download_info:
+        page.locator("#export-svg").click()
+    exported = Path(download_info.value.path()).read_text(encoding="utf-8")
+    assert "data-node-id" not in exported
+    assert "aria-label" not in exported
+    assert "role=\"button\"" not in exported
+    assert "Доброе утро" not in exported
+
     period = page.locator("#timeline-svg .timeline-point").first
     period.focus()
     period.press("Enter")
