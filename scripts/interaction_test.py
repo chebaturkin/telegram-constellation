@@ -52,6 +52,9 @@ with sync_playwright() as p:
     period.press("Enter")
     assert page.locator("#from-date").input_value() != ""
     assert page.locator("#to-date").input_value() != ""
+    period.press("Enter")
+    assert page.locator("#from-date").input_value() == ""
+    assert page.locator("#to-date").input_value() == ""
 
     page.locator("#clear-data").click()
     assert "Загрузите файл" in page.locator("#alt-text").inner_text()

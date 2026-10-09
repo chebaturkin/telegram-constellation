@@ -111,6 +111,7 @@ function renderSliceSummary(model) {
   if (!model) {
     ui.sliceSummary.textContent = '';
     ui.sliceStatus.textContent = '';
+    if (ui.resetFilters) ui.resetFilters.disabled = true;
     return;
   }
   const stats = model.stats || {};
@@ -122,6 +123,7 @@ function renderSliceSummary(model) {
   if (ui.fromDate.value || ui.toDate.value) parts.push((ui.fromDate.value || '…') + ' — ' + (ui.toDate.value || '…'));
   ui.sliceSummary.textContent = parts.join(' · ');
   ui.sliceStatus.textContent = hasActiveFilters() ? 'Активный срез: ' + parts.join(' · ') : '';
+  if (ui.resetFilters) ui.resetFilters.disabled = !hasActiveFilters();
 }
 
 function resetFilters() {
@@ -365,8 +367,9 @@ function renderTimeline(model) {
 }
 function selectPeriod(from, to) {
   if (!sourceModel) return;
-  ui.fromDate.value = from || '';
-  ui.toDate.value = to || '';
+  const same = ui.fromDate.value === from && ui.toDate.value === to;
+  ui.fromDate.value = same ? '' : (from || '');
+  ui.toDate.value = same ? '' : (to || '');
   selectedId = null;
   previewId = null;
   render();
