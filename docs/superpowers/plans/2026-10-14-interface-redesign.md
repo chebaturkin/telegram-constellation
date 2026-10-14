@@ -12,4 +12,4 @@
 - [x] проверить все сценарии: `node --test scripts/data-tests.mjs`, `node scripts/design-copy-check.mjs`, smoke, interaction и redesign.
 - [x] проверить дизайн в chromium на desktop/mobile и исправить наблюдаемые дефекты.
 - [x] сохранить три настоящих скриншота в `docs/screenshots/`, обновить readme и визуальные правила.
-- [ ] провести ревью diff, зафиксировать и отправить обновление в github; проверить результат публикации.
+- [x] провести ревью diff, зафиксировать и отправить обновление в github; проверить результат публикации.
