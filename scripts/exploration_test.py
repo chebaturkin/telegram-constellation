@@ -51,7 +51,7 @@ class ExplorationJourneys(unittest.TestCase):
             'buffer': json.dumps(ARCHIVE).encode(),
         })
         self.page.locator('.node').first.wait_for()
-        self.page.wait_for_function("document.querySelector('#dataset-label').textContent.includes('test.json')")
+        self.page.wait_for_function("() => document.querySelector('#dataset-label').textContent.includes('test.json')")
         self.open_filters()
 
     def open_filters(self):
@@ -184,7 +184,7 @@ class ExplorationJourneys(unittest.TestCase):
         page.locator('#status.is-error').wait_for()
         self.assertEqual(page.locator('#import-notes').inner_text(), notes)
         page.locator('#file-input').set_input_files(str(ROOT / 'fixtures/result-small.json'))
-        page.wait_for_function("document.querySelector('#dataset-label').textContent.includes('result-small.json')")
+        page.wait_for_function("() => document.querySelector('#dataset-label').textContent.includes('result-small.json')")
         self.assertFalse(page.locator('#import-notes').is_visible())
 
     def test_deletion_removes_selected_names_from_the_entire_dom(self):

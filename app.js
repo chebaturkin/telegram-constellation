@@ -48,7 +48,7 @@ const NS = 'http://www.w3.org/2000/svg';
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtNum = (value) => new Intl.NumberFormat('ru-RU').format(Number(value || 0));
 const pluralRu = (value, forms) => { const n = Math.abs(Number(value || 0)); const index = n % 10 === 1 && n % 100 !== 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2; return forms[index]; };
-const fmtDate = (value) => { if (!value) return '—'; const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value).slice(0, 10) : d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' }); };
+const fmtDate = (value) => { if (!value) return '-'; const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value).slice(0, 10) : d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' }); };
 const shortDate = (value) => { if (!value) return ''; const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value).slice(0, 10) : d.toISOString().slice(0, 10); };
 const nodeLabel = (node) => node?.label || node?.name || 'без имени';
 
@@ -150,7 +150,7 @@ function renderSliceSummary(model) {
     fmtNum(model.nodes?.length || 0) + ' ' + pluralRu(model.nodes?.length || 0, ['узел', 'узла', 'узлов']),
     fmtNum(model.edges?.length || 0) + ' ' + pluralRu(model.edges?.length || 0, ['связь', 'связи', 'связей']),
   ];
-  if (ui.fromDate.value || ui.toDate.value) parts.push((ui.fromDate.value || '…') + ' — ' + (ui.toDate.value || '…'));
+  if (ui.fromDate.value || ui.toDate.value) parts.push((ui.fromDate.value || '…') + ' / ' + (ui.toDate.value || '…'));
   if (ui.relationTypes.some((input) => !input.checked)) {
     const names = ui.relationTypes.filter((input) => input.checked).map((input) => relationNamesFor(model)[input.dataset.relationType]);
     parts.push(names.length ? 'связи: ' + names.join(', ') : 'связи скрыты');
@@ -304,7 +304,7 @@ function renderGraph(model) {
     circle.setAttribute('r', node.radius); circle.setAttribute('fill', node.color);
     circle.setAttribute('aria-label', `${nodeLabel(node)}, ${fmtNum(node.messageCount || node.count)} сообщений`);
     circle.setAttribute('tabindex', String(id === String(rovingId) ? 0 : -1));
-    circle.querySelector('title').textContent = `${nodeLabel(node)} — ${fmtNum(node.messageCount || node.count)} сообщений`;
+    circle.querySelector('title').textContent = `${nodeLabel(node)}: ${fmtNum(node.messageCount || node.count)} сообщений`;
     label.setAttribute('x', node.x); label.setAttribute('y', node.y + node.radius + 26);
     label.textContent = nodeLabel(node).slice(0, 32);
     if (arriving && arrivals < 12) {
@@ -378,7 +378,7 @@ function updateFocus(id) {
   ui.focusMetrics.hidden = false;
   ui.relationBreakdown.hidden = false;
   $('close-selection').hidden = !selectedId;
-  ui.focusMetrics.innerHTML = `<div><dt>сообщения</dt><dd>${fmtNum(node.messageCount || node.count)}</dd></div><div><dt>связанные узлы</dt><dd>${fmtNum(relationCount)}</dd></div><div><dt>период</dt><dd>${esc(fmtDate(node.firstDate))} — ${esc(fmtDate(node.lastDate))}</dd></div>`;
+  ui.focusMetrics.innerHTML = `<div><dt>сообщения</dt><dd>${fmtNum(node.messageCount || node.count)}</dd></div><div><dt>связанные узлы</dt><dd>${fmtNum(relationCount)}</dd></div><div><dt>период</dt><dd>${esc(fmtDate(node.firstDate))} / ${esc(fmtDate(node.lastDate))}</dd></div>`;
   if (ui.relationBreakdown) {
     const counts = new Map();
     (visibleModel.edges || []).forEach((edge) => {
@@ -467,7 +467,7 @@ function updateAltText(model, nodes) {
   const parts = [`в сети ${fmtNum(nodes.length)} узлов и ${fmtNum(edges.length)} связей.`];
   parts.push(`самые активные: ${top.map((n) => `${nodeLabel(n)} (${fmtNum(n.messageCount || n.count)})`).join(', ')}.`);
   const rels = edges.reduce((acc, edge) => { acc[edge.type || 'relation'] = (acc[edge.type || 'relation'] || 0) + 1; return acc; }, {});
-  parts.push(`типы связей: ${Object.entries(rels).map(([key, value]) => `${relationNamesFor(model)[key] || 'связи'} — ${value}`).join(', ')}.`);
+  parts.push(`типы связей: ${Object.entries(rels).map(([key, value]) => `${relationNamesFor(model)[key] || 'связи'}: ${value}`).join(', ')}.`);
   ui.altText.textContent = parts.join(' ');
 }
 
@@ -488,13 +488,13 @@ function renderTimeline(model) {
   motion.cancel('timeline');
   clear(ui.timeline);
   if (!periods.length) {
-    ui.timelineRange.textContent = '—';
+    ui.timelineRange.textContent = '-';
     ui.timelineEmpty.hidden = false;
     ui.timelineEmpty.textContent = model ? 'в выбранном срезе нет дат для шкалы.' : 'загрузите экспорт, чтобы увидеть периоды активности.';
     return;
   }
   ui.timelineEmpty.hidden = true;
-  ui.timelineRange.textContent = `${shortDate(periods[0].start)} — ${shortDate(periods.at(-1).end || periods.at(-1).start)}`;
+  ui.timelineRange.textContent = `${shortDate(periods[0].start)} / ${shortDate(periods.at(-1).end || periods.at(-1).start)}`;
   const peak = Math.max(...periods.map((period) => Number(period.count || 1)), 1);
   const step = 1120 / periods.length;
   const barWidth = Math.min(100, step * .64);
@@ -511,7 +511,7 @@ function renderTimeline(model) {
       x: x - step * .47, y: 8, width: step * .94, height: 122, rx: 10,
       class: `timeline-point${ratio > .7 ? ' is-peak' : ''}${selected ? ' is-selected' : ''}`,
       role: 'button', tabindex: '0', 'aria-pressed': String(selected),
-      'aria-label': `выбрать период ${from} — ${to}, ${fmtNum(period.count)} сообщений`,
+      'aria-label': `выбрать период с ${from} по ${to}, ${fmtNum(period.count)} сообщений`,
       'data-from': from, 'data-to': to,
     });
     point.addEventListener('click', () => selectPeriod(from, to));
@@ -578,7 +578,7 @@ function resetInspector() {
   $('inspector').hidden = true;
   ui.focusMetrics.hidden = true;
   ui.relationBreakdown.hidden = true;
-  ui.focusMetrics.innerHTML = '<div><dt>сообщения</dt><dd>—</dd></div><div><dt>связи</dt><dd>—</dd></div><div><dt>период</dt><dd>—</dd></div>';
+  ui.focusMetrics.innerHTML = '<div><dt>сообщения</dt><dd>-</dd></div><div><dt>связи</dt><dd>-</dd></div><div><dt>период</dt><dd>-</dd></div>';
   if (ui.relationBreakdown) ui.relationBreakdown.textContent = 'выберите точку, чтобы увидеть типы связей.';
 }
 
@@ -633,7 +633,7 @@ function readFile(file) {
   if (file.size > 250 * 1024 * 1024) { finishImportError('файл больше 250 МБ. выберите меньший json или разбейте экспорт по чатам.'); return; }
   pendingFileName = file.name || '';
   const token = importToken;
-  ui.progressWrap.hidden = false; setProgress(0); ui.progressLabel.textContent = 'читаем файл'; setImporting(true); setStatus('файл остаётся в браузере — готовим карту…');
+  ui.progressWrap.hidden = false; setProgress(0); ui.progressLabel.textContent = 'читаем файл'; setImporting(true); setStatus('файл остаётся в браузере. готовим карту…');
   let worker = null;
   if (typeof Worker === 'function') {
     try { worker = new Worker('./import-worker.js', { type: 'module' }); } catch { worker = null; }
@@ -830,7 +830,7 @@ function syncWorkspace() {
   renderImportNotes(sourceModel);
   const relationLabels = relationNamesFor(visibleModel);
   ui.relationTypes.forEach((input) => { input.closest('label').lastElementChild.textContent = relationLabels[input.dataset.relationType]; });
-  $('relation-filter-help').textContent = relationLabels.shared === 'общие чаты' ? 'общий чат и близость по времени не означают прямой разговор.' : 'общие участники и близость по времени — косвенные признаки связи.';
+  $('relation-filter-help').textContent = relationLabels.shared === 'общие чаты' ? 'общий чат и близость по времени не означают прямой разговор.' : 'общие участники и близость по времени дают косвенные признаки связи.';
   document.querySelector('#legend-dialog .legend-line--shared').nextElementSibling.textContent = relationLabels.shared;
   const loaded = Boolean(sourceModel);
   document.body.classList.toggle('has-data', loaded);

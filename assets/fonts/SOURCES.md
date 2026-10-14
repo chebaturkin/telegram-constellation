@@ -7,7 +7,7 @@
 - источник: [google/fonts, ofl/onest](https://github.com/google/fonts/tree/main/ofl/onest).
 - оригинал: `Onest[wght].ttf`, преобразован в `Onest-Variable.woff2` с fonttools.
 - лицензия: sil open font license 1.1, `Onest-OFL.txt`.
-- переменный вес 100–900, кириллица включена. основной шрифт обновлённого интерфейса.
+- переменный вес от 100 до 900, кириллица включена. основной шрифт обновлённого интерфейса.
 
 ## commit mono
 
