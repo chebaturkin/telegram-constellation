@@ -2,6 +2,49 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { parseExport, filterModel, deriveRelations, ExportFormatError } from '../app-data.js';
 
+test('relation types filter both layers and their counts without changing messages or the source', () => {
+  const model = parseExport(archive(
+    chat(1, [message(1, 1, '2026-02-01T12:00:00'), message(2, 2, '2026-02-01T12:01:00', { reply_to_message_id: 1 })]),
+    chat(2, [message(3, 1, '2026-02-01T12:02:00'), message(4, 3, '2026-02-01T12:03:00')]),
+  ));
+  const before = JSON.stringify(model);
+  const view = filterModel(model, { mode: 'participants', relationTypes: ['reply'] });
+  assert.deepEqual(view.edges.map((edge) => edge.type), ['reply']);
+  assert.equal(view.chatEdges.length, 0);
+  assert.deepEqual(view.participantEdges, view.edges);
+  assert.equal(view.stats.relationCount, 1);
+  assert.deepEqual(view.stats.relationCounts, { reply: 1, mention: 0, shared: 0, time: 0 });
+  assert.equal(view.stats.messageCount, 4);
+  assert.equal(view.nodes.length, 3);
+  assert.equal(view.periods[0].count, 4);
+  assert.equal(JSON.stringify(model), before);
+  assert.equal(filterModel(model, { mode: 'chats', relationTypes: ['reply'] }).edges.length, 0);
+});
+
+test('an empty type selection hides edges while keeping the full message slice', () => {
+  const model = parseExport([message(1, 1, '2026-02-01T12:00:00'), message(2, 2, '2026-02-01T12:01:00')]);
+  const view = filterModel(model, { relationTypes: [] });
+  assert.equal(view.edges.length, 0);
+  assert.equal(view.participantEdges.length, 0);
+  assert.equal(view.stats.relationCount, 0);
+  assert.equal(view.nodes.length, 2);
+  assert.equal(view.stats.messageCount, 2);
+  assert.deepEqual(filterModel(model).edges, model.edges);
+});
+
+test('relation type selection composes with calendar and chat filters', () => {
+  const model = parseExport(archive(chat(1, [
+    message(1, 1, '2026-02-01T12:00:00'),
+    message(2, 2, '2026-02-01T12:01:00', { reply_to_message_id: 1 }),
+    message(3, 1, '2026-03-01T12:00:00'),
+    message(4, 2, '2026-03-01T12:01:00'),
+  ]), chat(2, [message(1, 3, '2026-03-01T12:00:00')])));
+  const view = filterModel(model, { chatId: '1', from: '2026-03-01', to: '2026-03-01', mode: 'participants', relationTypes: ['reply'] });
+  assert.equal(view.edges.length, 0);
+  assert.equal(view.stats.messageCount, 2);
+  assert.deepEqual(view.nodes.map((node) => node.id), ['user1', 'user2']);
+});
+
 const message = (id, sender, date, extra = {}) => ({ id, type: 'message', from: `Участник ${sender}`, from_id: `user${sender}`, date, text: 'PRIVATE_MESSAGE_BODY', ...extra });
 const chat = (id, messages) => ({ id, name: `Чат ${id}`, messages });
 const archive = (...chats) => ({ chats: { list: chats } });

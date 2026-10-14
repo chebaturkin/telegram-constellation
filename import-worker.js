@@ -4,7 +4,7 @@ import { parseExport } from './app-data.js';
 self.onmessage = ({ data }) => {
   let lastPercent = -1;
   try {
-    self.postMessage({ type: 'progress', label: 'разбираем JSON', percent: 0 });
+    self.postMessage({ type: 'progress', label: 'разбираем json', percent: 0 });
     const text = new TextDecoder('utf-8', { fatal: true }).decode(data.buffer);
     const model = parseExport(text, {
       onProgress: ({ phase, ratio }) => {
@@ -17,6 +17,6 @@ self.onmessage = ({ data }) => {
     });
     self.postMessage({ type: 'ready', model });
   } catch (error) {
-    self.postMessage({ type: 'error', message: error.userMessage || (error.name === 'TypeError' ? 'не удалось прочитать кодировку. выберите исходный UTF-8 JSON из Telegram Desktop.' : 'формат файла не распознан. выберите result.json из Telegram Desktop.') });
+    self.postMessage({ type: 'error', message: error.userMessage || (error.name === 'TypeError' ? 'не удалось прочитать кодировку. выберите исходный json в utf-8 из telegram desktop.' : 'формат файла не распознан. выберите result.json из telegram desktop.') });
   }
 };

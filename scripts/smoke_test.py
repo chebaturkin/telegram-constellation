@@ -15,11 +15,12 @@ with sync_playwright() as p:
     page.goto(f"http://127.0.0.1:{PORT}/index.html")
     page.wait_for_load_state("networkidle")
     assert "файл остаётся в браузере" in page.locator("body").inner_text()
-    assert page.locator("#atlas-empty").is_visible()
+    assert page.locator("#welcome").is_visible()
     page.locator("#file-input").set_input_files(str(FIXTURE))
     page.locator("#atlas-svg .node").first.wait_for()
+    page.locator("#filters-panel > summary").click()
     assert page.locator("#atlas-svg .node").count() > 0
-    assert "сведено в агрегаты" in page.locator("#status").inner_text()
+    assert "карта построена" in page.locator("#status").inner_text()
     page.locator("#view-mode").select_option("participants")
     assert page.locator("#atlas-svg .node").count() >= 2
     page.locator("#relations-only").check()
@@ -27,7 +28,7 @@ with sync_playwright() as p:
     page.locator("#relations-only").uncheck()
     page.locator("#export-svg").click()
     page.locator("#clear-data").click()
-    assert page.locator("#atlas-empty").is_visible()
+    assert page.locator("#welcome").is_visible()
     page.locator("#file-input").set_input_files(str(INVALID))
     page.locator("#status.is-error").wait_for()
     assert "не найден" in page.locator("#status").inner_text().lower() or "не распознан" in page.locator("#status").inner_text().lower()

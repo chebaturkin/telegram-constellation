@@ -14,6 +14,7 @@ with sync_playwright() as p:
     page.wait_for_load_state("networkidle")
     page.locator("#file-input").set_input_files(str(FIXTURE))
     page.locator("#atlas-svg .node").first.wait_for()
+    page.locator("#filters-panel > summary").click()
     assert "result-small.json" in page.locator("#dataset-label").inner_text()
 
     before_nodes = page.locator("#atlas-svg .node").count()

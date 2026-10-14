@@ -1,4 +1,4 @@
-# Telegram Constellation — дизайн улучшенной версии
+# telegram constellation — дизайн улучшенной версии
 
 ## Цель
 

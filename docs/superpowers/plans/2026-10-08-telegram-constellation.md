@@ -1,8 +1,8 @@
-# Telegram Constellation Professional Polish Implementation Plan
+# telegram constellation Professional Polish Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Укрепить импорт, нормализацию, карту и responsive-интерфейс Telegram Constellation, сохранив приватный client-side сценарий и атласную дизайн-систему.
+**Goal:** Укрепить импорт, нормализацию, карту и responsive-интерфейс telegram constellation, сохранив приватный client-side сценарий и атласную дизайн-систему.
 
 **Architecture:** Оставить четыре текущих слоя (`app-data.js`, `import-worker.js`, `app.js`, `index.html`/`styles.css`), но чётко разделить нормализацию, UI-состояния и рендер. Нормализатор возвращает только агрегаты и технические метаданные, Worker управляет тяжёлым импортом, UI отображает согласованный фильтрованный срез. Изменения проверяются тестами данных, design-copy check и Playwright smoke.
 

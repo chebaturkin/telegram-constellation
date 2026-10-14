@@ -1,22 +1,23 @@
-# Локальные шрифты
+# локальные шрифты
 
-Эти файлы лежат в репозитории, поэтому GitHub Pages не делает запросов к внешнему каталогу шрифтов. Лицензионные тексты сохранены рядом с файлами шрифтов.
+файлы хранятся в репозитории: приложению не нужны запросы к внешним каталогам. лицензионные тексты находятся рядом со шрифтами.
 
-## Newsreader
+## onest
 
-- Источник: [productiontype/Newsreader](https://github.com/productiontype/Newsreader), каталог `fonts/variable/woff2`.
-- Файлы: `Newsreader-Variable.woff2` и `Newsreader-Variable-Italic.woff2`.
-- Лицензия: SIL Open Font License 1.1, см. `Newsreader-OFL.txt`.
-- Это оригинальные variable WOFF2-файлы из официального репозитория; они не перекодировались.
+- источник: [google/fonts, ofl/onest](https://github.com/google/fonts/tree/main/ofl/onest).
+- оригинал: `Onest[wght].ttf`, преобразован в `Onest-Variable.woff2` с fonttools.
+- лицензия: sil open font license 1.1, `Onest-OFL.txt`.
+- переменный вес 100–900, кириллица включена. основной шрифт обновлённого интерфейса.
 
-## Commit Mono
+## commit mono
 
-- Источник: [eigilnikolajsen/commit-mono](https://github.com/eigilnikolajsen/commit-mono), архив релиза `CommitMono-1.143.zip`.
-- В репозиторий положены regular 400 и 700 из `ttfautohint`, преобразованные в WOFF2 локально с fontTools 4.63.0: `CommitMono-400.woff2` и `CommitMono-700.woff2`.
-- Лицензия шрифта: SIL Open Font License 1.1, см. `CommitMono-OFL.txt` (официальный `LICENSE-FONT`). Код сайта Commit Mono распространяется отдельно под MIT и сюда не включён.
+- источник: [eigilnikolajsen/commit-mono](https://github.com/eigilnikolajsen/commit-mono), релиз `CommitMono-1.143.zip`.
+- regular 400 и 700 из `ttfautohint`, преобразованные в woff2 с fonttools 4.63.0.
+- лицензия: sil open font license 1.1, `CommitMono-OFL.txt`.
+- используется для цифр и коротких технических подписей; русские символы берутся из fallback.
 
-## Кириллица и fallback
+## newsreader
 
-Newsreader и Commit Mono в этих официальных сборках не содержат русских букв `А–Я`, `а–я` и `Ёё`. Они содержат нужную латинскую графику и базовую пунктуацию, включая `№`, кавычки и тире. Для русских подписей браузер использует следующий шрифт в CSS-стеке, а для чисел и латинских подписей — локальный файл. Поэтому кириллица не зависит от отсутствующего glyph coverage и не превращается в квадраты.
-
-Проверка покрытия выполнена через fontTools: Newsreader — 564 кодовых точки, Commit Mono — 1 209; русские буквы отсутствуют в обоих файлах.
+- источник: [productiontype/Newsreader](https://github.com/productiontype/Newsreader), каталог `fonts/variable/woff2`.
+- `Newsreader-Variable.woff2` и `Newsreader-Variable-Italic.woff2` сохранены от предыдущего оформления, текущая страница их не загружает.
+- лицензия: sil open font license 1.1, `Newsreader-OFL.txt`.

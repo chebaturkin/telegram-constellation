@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Harden the local Telegram Constellation app, bring its UI and documentation into the Chebaturkin voice, and publish it through GitHub Pages.
+**Goal:** Harden the local telegram constellation app, bring its UI and documentation into the Chebaturkin voice, and publish it through GitHub Pages.
 
 **Architecture:** Keep the vanilla static site and aggregate-only parser. Make imports transactional in `app.js`, keep relation derivation in `app-data.js`, expose timeline and inspector state through semantic HTML/SVG controls, and ship a no-network CSP plus GitHub Actions Pages workflow.
 

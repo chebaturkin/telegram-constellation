@@ -1,4 +1,4 @@
-# Telegram Constellation — professional polish design
+# telegram constellation — professional polish design
 
 Дата: 2026-10-09
 

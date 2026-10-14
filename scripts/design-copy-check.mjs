@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(new URL('..', import.meta.url).pathname);
-const files = ['index.html', 'app.js', 'styles.css', 'import-worker.js'];
+const files = ['index.html', 'app.js', 'styles.css', 'import-worker.js', 'app-exploration.js', 'app-graph.js', 'app-motion.js', 'demo-data.js'];
 const forbidden = [
   ['LOCAL', 'ARCHIVE'].join(' '), ['01', 'IMPORT'].join(' / '), ['02', 'VIEW'].join(' / '),
   ['03', 'FILTERS'].join(' / '), ['04', 'TIME'].join(' / '), ['FOCUS', ''].join(' / '),
@@ -14,15 +14,22 @@ const required = [
   'файл остаётся в браузере',
   'тексты сообщений не выводятся',
   'загрузите архив',
+  '<h1>telegram constellation</h1>',
+  '<title>telegram constellation',
   'сбросить фильтры',
 ];
 const hits = [];
 for (const file of files) {
   const content = readFileSync(resolve(root, file), 'utf8');
+  for (const match of content.matchAll(/telegram constellation/gi)) if (match[0] !== 'telegram constellation') hits.push(`${file}: название продукта должно быть строчным`);
   for (const phrase of forbidden) if (content.includes(phrase)) hits.push(`${file}: ${phrase}`);
   if (file === 'index.html') {
     for (const phrase of required) if (!content.includes(phrase)) hits.push(`${file}: пропущен обязательный текст «${phrase}»`);
   }
+}
+for (const file of ['README.md', 'AGENT_PROMPT.md', 'docs/DESIGN-RULES.md']) {
+  const content = readFileSync(resolve(root, file), 'utf8');
+  for (const match of content.matchAll(/telegram constellation/gi)) if (match[0] !== 'telegram constellation') hits.push(`${file}: название продукта должно быть строчным`);
 }
 if (hits.length) {
   console.error('Найдены запрещённые технические метки:\n' + hits.join('\n'));
