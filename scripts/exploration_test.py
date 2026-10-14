@@ -32,7 +32,7 @@ class ExplorationJourneys(unittest.TestCase):
         cls.playwright.stop()
 
     def setUp(self):
-        self.page = self.browser.new_page(viewport={'width': 1440, 'height': 1000})
+        self.page = self.browser.new_page(locale="ru-RU", viewport={'width': 1440, 'height': 1000})
         self.page.set_default_timeout(15000)
         self.errors, self.requests = [], []
         self.page.on('pageerror', lambda error: self.errors.append(str(error)))

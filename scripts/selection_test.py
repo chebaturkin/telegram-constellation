@@ -6,7 +6,7 @@ from playwright.sync_api import sync_playwright
 PORT = os.environ.get('APP_PORT', '4175')
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
-    page = browser.new_page(viewport={'width': 1440, 'height': 1000})
+    page = browser.new_page(locale="ru-RU", viewport={'width': 1440, 'height': 1000})
     page.goto(f'http://127.0.0.1:{PORT}/')
     page.wait_for_load_state('networkidle')
     dense = {'id': 'dense', 'name': 'проверка выбора', 'messages': [
@@ -26,7 +26,7 @@ with sync_playwright() as p:
         page.locator('#close-selection').click()
     # A fresh page avoids DevTools retaining nodes inspected by bounding_box above.
     page.close()
-    privacy_page = browser.new_page(viewport={'width': 1440, 'height': 1000})
+    privacy_page = browser.new_page(locale="ru-RU", viewport={'width': 1440, 'height': 1000})
     privacy_page.goto(f'http://127.0.0.1:{PORT}/')
     privacy_page.wait_for_load_state('networkidle')
     privacy_page.evaluate("""() => {

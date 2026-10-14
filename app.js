@@ -1,3 +1,4 @@
+import { t, getLocale, localeTag, mountLocale, translateMessage, setLocale } from './i18n.js';
 import { parseExport, filterModel } from './app-data.js';
 import { createDemoExport } from './demo-data.js';
 import { relationNamesFor, renderNeighbors, renderImportNotes } from './app-exploration.js';
@@ -46,11 +47,11 @@ const hoverPointer = matchMedia('(hover: hover) and (pointer: fine)');
 
 const NS = 'http://www.w3.org/2000/svg';
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmtNum = (value) => new Intl.NumberFormat('ru-RU').format(Number(value || 0));
-const pluralRu = (value, forms) => { const n = Math.abs(Number(value || 0)); const index = n % 10 === 1 && n % 100 !== 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2; return forms[index]; };
-const fmtDate = (value) => { if (!value) return '-'; const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value).slice(0, 10) : d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' }); };
+const fmtNum = (value) => new Intl.NumberFormat(localeTag()).format(Number(value || 0));
+const pluralRu = (value, forms) => { if (getLocale() === 'en') return Number(value) === 1 ? forms[0] : forms[2]; const n = Math.abs(Number(value || 0)); const index = n % 10 === 1 && n % 100 !== 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2; return forms[index]; };
+const fmtDate = (value) => { if (!value) return '-'; const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value).slice(0, 10) : d.toLocaleDateString(localeTag(), { day: '2-digit', month: 'short', year: 'numeric' }); };
 const shortDate = (value) => { if (!value) return ''; const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value).slice(0, 10) : d.toISOString().slice(0, 10); };
-const nodeLabel = (node) => node?.label || node?.name || 'без имени';
+const nodeLabel = (node) => node?.label || node?.name || t("s0");
 
 function setStatus(message, error = false) {
   const changed = ui.status.textContent !== message;
@@ -83,8 +84,8 @@ function finishImportError(message) {
   if (ui.progressWrap) ui.progressWrap.hidden = true;
   setProgress(0);
   setImporting(false);
-  const safeMessage = String(message || 'формат файла не распознан.');
-  setStatus(sourceModel ? 'импорт не завершён. текущая карта сохранена. ' + safeMessage : safeMessage, true);
+  const safeMessage = String(message || t("s1"));
+  setStatus(sourceModel ? t("s2") + safeMessage : safeMessage, true);
 }
 function setProgress(percent) {
   const value = Math.max(0, Math.min(100, Number(percent) || 0));
@@ -102,8 +103,8 @@ function addOptions(select, entries, firstLabel) {
 }
 function populateControls(model) {
   ui.relationTypes.forEach((input) => { input.checked = true; });
-  addOptions(ui.chatFilter, model.chats, 'все чаты');
-  addOptions(ui.personFilter, model.participants, 'все участники');
+  addOptions(ui.chatFilter, model.chats, t("s3"));
+  addOptions(ui.personFilter, model.participants, t("s4"));
   ui.chatFilter.value = 'all'; ui.personFilter.value = 'all'; ui.fromDate.value = ''; ui.toDate.value = '';
   ui.fromDate.min = ''; ui.fromDate.max = ''; ui.toDate.min = ''; ui.toDate.max = '';
   ui.viewMode.value = 'auto'; ui.relationsOnly.checked = false;
@@ -112,10 +113,10 @@ function populateControls(model) {
   setDatasetLabel(model);
 }
 function setDatasetLabel(model) {
-  if (!model) { ui.datasetLabel.textContent = 'файл не выбран'; return; }
+  if (!model) { ui.datasetLabel.textContent = t("s5"); return; }
   const count = model.stats?.messageCount || model.nodes?.reduce((sum, n) => sum + Number(n.messageCount || 0), 0) || 0;
   const filePrefix = activeFileName ? activeFileName + ' · ' : '';
-  ui.datasetLabel.textContent = filePrefix + `${fmtNum(count)} ${pluralRu(count, ['сообщение', 'сообщения', 'сообщений'])} · ${fmtNum(model.nodes?.length || 0)} ${pluralRu(model.nodes?.length || 0, ['узел', 'узла', 'узлов'])}`;
+  ui.datasetLabel.textContent = filePrefix + `${fmtNum(count)} ${pluralRu(count, [t("s6"), t("s7"), t("s8")])} · ${fmtNum(model.nodes?.length || 0)} ${pluralRu(model.nodes?.length || 0, [t("s9"), t("s10"), t("s11")])}`;
 }
 
 function currentFilteredModel({ includeDates = true } = {}) {
@@ -146,17 +147,17 @@ function renderSliceSummary(model) {
   }
   const stats = model.stats || {};
   const parts = [
-    fmtNum(stats.messageCount || 0) + ' ' + pluralRu(stats.messageCount || 0, ['сообщение', 'сообщения', 'сообщений']),
-    fmtNum(model.nodes?.length || 0) + ' ' + pluralRu(model.nodes?.length || 0, ['узел', 'узла', 'узлов']),
-    fmtNum(model.edges?.length || 0) + ' ' + pluralRu(model.edges?.length || 0, ['связь', 'связи', 'связей']),
+    fmtNum(stats.messageCount || 0) + ' ' + pluralRu(stats.messageCount || 0, [t("s6"), t("s7"), t("s8")]),
+    fmtNum(model.nodes?.length || 0) + ' ' + pluralRu(model.nodes?.length || 0, [t("s9"), t("s10"), t("s11")]),
+    fmtNum(model.edges?.length || 0) + ' ' + pluralRu(model.edges?.length || 0, [t("s12"), t("s13"), t("s14")]),
   ];
   if (ui.fromDate.value || ui.toDate.value) parts.push((ui.fromDate.value || '…') + ' / ' + (ui.toDate.value || '…'));
   if (ui.relationTypes.some((input) => !input.checked)) {
     const names = ui.relationTypes.filter((input) => input.checked).map((input) => relationNamesFor(model)[input.dataset.relationType]);
-    parts.push(names.length ? 'связи: ' + names.join(', ') : 'связи скрыты');
+    parts.push(names.length ? t("s15") + names.join(', ') : t("s16"));
   }
   ui.sliceSummary.textContent = parts.join(' · ');
-  ui.sliceStatus.textContent = hasActiveFilters() ? 'активный срез: ' + parts.join(' · ') : '';
+  ui.sliceStatus.textContent = hasActiveFilters() ? t("s17") + parts.join(' · ') : '';
   ui.sliceStatus.hidden = !hasActiveFilters();
   if (ui.resetFilters) ui.resetFilters.disabled = !hasActiveFilters();
 }
@@ -224,8 +225,8 @@ function renderGraph(model) {
   if (!model) {
     displayedNodes = [];
     ui.atlasEmpty.hidden = false;
-    ui.atlasEmptyTitle.textContent = 'здесь появится карта вашего архива';
-    ui.atlasEmptyCopy.textContent = 'загрузите локальный экспорт, чтобы увидеть связи и периоды.';
+    ui.atlasEmptyTitle.textContent = t("s18");
+    ui.atlasEmptyCopy.textContent = t("s19");
     updateAltText(null, []);
     return;
   }
@@ -244,9 +245,9 @@ function renderGraph(model) {
   if (previewId && !visibleIds.has(String(previewId))) previewId = null;
   ui.atlasEmpty.hidden = displayedNodes.length > 0;
   $('empty-reset').hidden = displayedNodes.length > 0 || !hasActiveFilters();
-  ui.atlasEmptyTitle.textContent = displayedNodes.length ? '' : 'в этом срезе нет точек';
-  ui.atlasEmptyCopy.textContent = displayedNodes.length ? '' : (model.filterError === 'INVALID_DATE_RANGE' ? 'дата начала позже даты окончания. измените границы периода.' : (ui.relationsOnly.checked ? 'в выбранном срезе нет связей. отключите режим «только связи» или измените фильтры.' : 'измените фильтры, чтобы вернуть точки на карту.'));
-  if (!displayedNodes.length && ui.relationsOnly.checked && ui.relationTypes?.every((input) => !input.checked)) ui.atlasEmptyCopy.textContent = 'ни один тип связи не выбран. включите нужные типы или сбросьте фильтры.';
+  ui.atlasEmptyTitle.textContent = displayedNodes.length ? '' : t("s20");
+  ui.atlasEmptyCopy.textContent = displayedNodes.length ? '' : (model.filterError === 'INVALID_DATE_RANGE' ? t("s21") : (ui.relationsOnly.checked ? t("s22") : t("s23")));
+  if (!displayedNodes.length && ui.relationsOnly.checked && ui.relationTypes?.every((input) => !input.checked)) ui.atlasEmptyCopy.textContent = t("s24");
   const edgeKeys = new Set();
   (model.edges || []).forEach((edge) => {
     const source = byId.get(String(edge.source)); const target = byId.get(String(edge.target));
@@ -302,9 +303,9 @@ function renderGraph(model) {
     halo.setAttribute('r', node.radius + 12);
     halo.classList.toggle('node-halo--hot', node.activityRatio >= .75);
     circle.setAttribute('r', node.radius); circle.setAttribute('fill', node.color);
-    circle.setAttribute('aria-label', `${nodeLabel(node)}, ${fmtNum(node.messageCount || node.count)} сообщений`);
+    circle.setAttribute('aria-label', t("s25", { p0: nodeLabel(node), p1: fmtNum(node.messageCount || node.count), count: node.messageCount || node.count }));
     circle.setAttribute('tabindex', String(id === String(rovingId) ? 0 : -1));
-    circle.querySelector('title').textContent = `${nodeLabel(node)}: ${fmtNum(node.messageCount || node.count)} сообщений`;
+    circle.querySelector('title').textContent = t("s26", { p0: nodeLabel(node), p1: fmtNum(node.messageCount || node.count), count: node.messageCount || node.count });
     label.setAttribute('x', node.x); label.setAttribute('y', node.y + node.radius + 26);
     label.textContent = nodeLabel(node).slice(0, 32);
     if (arriving && arrivals < 12) {
@@ -372,13 +373,13 @@ function updateFocus(id) {
     motion.play(ui.focusTitle, [{ opacity: .5, transform: 'translateY(3px)' }, { opacity: 1, transform: 'translateY(0)' }], { channel: 'inspector' });
     motion.play(ui.focusMetrics, [{ opacity: .5 }, { opacity: 1 }], { channel: 'inspector' });
   }
-  ui.focusCopy.textContent = node.type === 'participant' ? 'выделены связи этого участника с другими точками на карте.' : 'выделены связи этого чата с другими точками на карте.';
-  $('focus-kind').textContent = node.type === 'participant' ? 'участник' : 'чат';
+  ui.focusCopy.textContent = node.type === 'participant' ? t("s27") : t("s28");
+  $('focus-kind').textContent = node.type === 'participant' ? t("s29") : t("s30");
   $('inspector').hidden = !selectedId && !(document.activeElement?.matches('.node:focus-visible') && document.activeElement?.dataset.nodeId === String(id));
   ui.focusMetrics.hidden = false;
   ui.relationBreakdown.hidden = false;
   $('close-selection').hidden = !selectedId;
-  ui.focusMetrics.innerHTML = `<div><dt>сообщения</dt><dd>${fmtNum(node.messageCount || node.count)}</dd></div><div><dt>связанные узлы</dt><dd>${fmtNum(relationCount)}</dd></div><div><dt>период</dt><dd>${esc(fmtDate(node.firstDate))} / ${esc(fmtDate(node.lastDate))}</dd></div>`;
+  ui.focusMetrics.innerHTML = t("s31", { p0: fmtNum(node.messageCount || node.count), p1: fmtNum(relationCount), p2: esc(fmtDate(node.firstDate)), p3: esc(fmtDate(node.lastDate)) });
   if (ui.relationBreakdown) {
     const counts = new Map();
     (visibleModel.edges || []).forEach((edge) => {
@@ -388,13 +389,13 @@ function updateFocus(id) {
     });
     clear(ui.relationBreakdown);
     if (!counts.size) {
-      ui.relationBreakdown.textContent = 'связей нет.';
+      ui.relationBreakdown.textContent = t("s32");
     } else {
       [...counts.entries()].forEach(([type, count]) => {
         const row = document.createElement('div');
         row.className = 'relation-breakdown__row';
         const label = document.createElement('span');
-        label.textContent = relationNamesFor(visibleModel)[type] || 'связи';
+        label.textContent = relationNamesFor(visibleModel)[type] || t("s13");
         const value = document.createElement('strong');
         value.textContent = fmtNum(count);
         row.append(label, value);
@@ -417,7 +418,7 @@ function commitSelection(id) {
   selectedId = String(id);
   previewId = null;
   updateFocus(id);
-  if (ui.selectionStatus) ui.selectionStatus.textContent = `выбрано: ${nodeLabel(visibleModel?.nodes.find((node) => String(node.id) === String(id)))}`;
+  if (ui.selectionStatus) ui.selectionStatus.textContent = t("s33", { p0: nodeLabel(visibleModel?.nodes.find((node) => String(node.id) === String(id))) });
   applySelection();
   selectionSignal(id);
 }
@@ -460,14 +461,14 @@ function applySelection() {
   });
 }
 function updateAltText(model, nodes) {
-  if (!model) { ui.altText.textContent = 'загрузите файл, чтобы получить текстовое описание сети.'; return; }
-  if (!nodes.length) { ui.altText.textContent = 'после фильтрации узлов не осталось. измените срез или сбросьте фильтры.'; return; }
+  if (!model) { ui.altText.textContent = t("s34"); return; }
+  if (!nodes.length) { ui.altText.textContent = t("s35"); return; }
   const edges = model.edges || [];
   const top = [...nodes].sort((a, b) => Number(b.messageCount || b.count) - Number(a.messageCount || a.count)).slice(0, 6);
-  const parts = [`в сети ${fmtNum(nodes.length)} узлов и ${fmtNum(edges.length)} связей.`];
-  parts.push(`самые активные: ${top.map((n) => `${nodeLabel(n)} (${fmtNum(n.messageCount || n.count)})`).join(', ')}.`);
+  const parts = [t("s36", { p0: fmtNum(nodes.length), p1: fmtNum(edges.length) })];
+  parts.push(t("s37", { p0: top.map((n) => `${nodeLabel(n)} (${fmtNum(n.messageCount || n.count)})`).join(', ') }));
   const rels = edges.reduce((acc, edge) => { acc[edge.type || 'relation'] = (acc[edge.type || 'relation'] || 0) + 1; return acc; }, {});
-  parts.push(`типы связей: ${Object.entries(rels).map(([key, value]) => `${relationNamesFor(model)[key] || 'связи'}: ${value}`).join(', ')}.`);
+  parts.push(t("s38", { p0: Object.entries(rels).map(([key, value]) => `${relationNamesFor(model)[key] || t("s13")}: ${value}`).join(', ') }));
   ui.altText.textContent = parts.join(' ');
 }
 
@@ -490,7 +491,7 @@ function renderTimeline(model) {
   if (!periods.length) {
     ui.timelineRange.textContent = '-';
     ui.timelineEmpty.hidden = false;
-    ui.timelineEmpty.textContent = model ? 'в выбранном срезе нет дат для шкалы.' : 'загрузите экспорт, чтобы увидеть периоды активности.';
+    ui.timelineEmpty.textContent = model ? t("s39") : t("s40");
     return;
   }
   ui.timelineEmpty.hidden = true;
@@ -511,7 +512,7 @@ function renderTimeline(model) {
       x: x - step * .47, y: 8, width: step * .94, height: 122, rx: 10,
       class: `timeline-point${ratio > .7 ? ' is-peak' : ''}${selected ? ' is-selected' : ''}`,
       role: 'button', tabindex: '0', 'aria-pressed': String(selected),
-      'aria-label': `выбрать период с ${from} по ${to}, ${fmtNum(period.count)} сообщений`,
+      'aria-label': t("s41", { p0: from, p1: to, p2: fmtNum(period.count), count: period.count }),
       'data-from': from, 'data-to': to,
     });
     point.addEventListener('click', () => selectPeriod(from, to));
@@ -522,7 +523,7 @@ function renderTimeline(model) {
     ui.timeline.append(point);
     if (index % Math.max(1, Math.ceil(periods.length / 8)) === 0) {
       const label = svgEl('text', { x, y: 157, 'text-anchor': 'middle', class: 'timeline-label' });
-      label.textContent = new Date(period.start).toLocaleDateString('ru-RU', { month: 'short', timeZone: 'UTC' }).replace('.', '');
+      label.textContent = new Date(period.start).toLocaleDateString(localeTag(), { month: 'short', timeZone: 'UTC' }).replace('.', '');
       ui.timeline.append(label);
     }
   });
@@ -552,13 +553,13 @@ function render() {
     renderGraph(null);
     renderTimeline(null);
     resetInspector();
-    setStatus(error.userMessage || error.message || 'не удалось применить фильтр.', true);
+    setStatus(error.userMessage || error.message || t("s42"), true);
     return;
   }
   setDatasetLabel(visibleModel);
   renderSliceSummary(visibleModel);
-  if (visibleModel?.filterError === 'INVALID_DATE_RANGE') setStatus('дата начала позже даты окончания. измените границы периода.', true);
-  else if (ui.status.classList.contains('is-error')) setStatus('срез обновлён.');
+  if (visibleModel?.filterError === 'INVALID_DATE_RANGE') setStatus(t("s21"), true);
+  else if (ui.status.classList.contains('is-error')) setStatus(t("s43"));
   renderGraph(visibleModel);
   renderTimeline(currentFilteredModel({ includeDates: false }));
   syncWorkspace();
@@ -571,25 +572,25 @@ function resetInspector() {
   delete $('inspector').dataset.nodeId;
   renderNeighbors(null, null);
   const hasVisibleNodes = Boolean(visibleModel?.nodes?.length);
-  ui.focusTitle.textContent = hasVisibleNodes ? 'выберите точку на карте' : (sourceModel ? 'в этом срезе нет узлов' : 'выберите точку на карте');
-  ui.focusCopy.textContent = hasVisibleNodes ? 'или найдите имя в списке слева. здесь появятся число сообщений, период и связи.' : (sourceModel ? 'измените фильтры, чтобы вернуть точки на карту.' : 'или найдите имя в списке слева. здесь появятся число сообщений, период и связи.');
-  $('focus-kind').textContent = 'детали узла';
+  ui.focusTitle.textContent = hasVisibleNodes ? t("s44") : (sourceModel ? t("s45") : t("s44"));
+  ui.focusCopy.textContent = hasVisibleNodes ? t("s46") : (sourceModel ? t("s23") : t("s46"));
+  $('focus-kind').textContent = t("s47");
   $('close-selection').hidden = true;
   $('inspector').hidden = true;
   ui.focusMetrics.hidden = true;
   ui.relationBreakdown.hidden = true;
-  ui.focusMetrics.innerHTML = '<div><dt>сообщения</dt><dd>-</dd></div><div><dt>связи</dt><dd>-</dd></div><div><dt>период</dt><dd>-</dd></div>';
-  if (ui.relationBreakdown) ui.relationBreakdown.textContent = 'выберите точку, чтобы увидеть типы связей.';
+  ui.focusMetrics.innerHTML = t("s48");
+  if (ui.relationBreakdown) ui.relationBreakdown.textContent = t("s49");
 }
 
-function updateScale() { ui.scale.textContent = `масштаб ${zoom.toFixed(1)}×`; ui.zoomReset.textContent = `${zoom.toFixed(1)}×`; }
+function updateScale() { ui.scale.textContent = t("s50", { p0: zoom.toFixed(1) }); ui.zoomReset.textContent = `${zoom.toFixed(1)}×`; }
 function resetView() { cancelExport(); endPan(); zoom = 1; pan = { x: 0, y: 0 }; updateScale(); updateViewport({ animate: true }); renderVersion += 1; clearSelection(); }
 function applyModel(model, { demo = false } = {}) {
   const nextModel = model?.model || model;
   previewId = null;
   newArchive = true;
   layoutCache.clear();
-  if (!nextModel || !Array.isArray(nextModel.nodes) || !nextModel.nodes.length) throw new Error('в файле не найдено сообщений. нужен экспорт telegram desktop с массивом messages.');
+  if (!nextModel || !Array.isArray(nextModel.nodes) || !nextModel.nodes.length) throw new Error(t("s51"));
   sourceModel = nextModel;
   ui.selectionStatus.textContent = '';
   isDemo = demo;
@@ -600,16 +601,16 @@ function applyModel(model, { demo = false } = {}) {
   $('filters-panel').open = false;
   if (demo) ui.viewMode.value = 'participants';
   zoom = 1; pan = { x: 0, y: 0 }; selectedId = null; updateScale();
-  setEnabled(true); render(); setStatus(`готово: ${fmtNum(sourceModel.stats?.messageCount || sourceModel.nodes.reduce((sum, n) => sum + Number(n.messageCount || n.count || 0), 0))} сообщений. карта построена.`);
+  setEnabled(true); render(); setStatus(t("s52", { p0: fmtNum(sourceModel.stats?.messageCount || sourceModel.nodes.reduce((sum, n) => sum + Number(n.messageCount || n.count || 0), 0)), count: sourceModel.stats?.messageCount }));
 }
 function parseAndRender(text) {
   let parsed;
-  try { parsed = JSON.parse(text); } catch { throw new Error('не удалось прочитать json. проверьте, что файл не повреждён и сохранён в формате utf-8.'); }
+  try { parsed = JSON.parse(text); } catch { throw new Error(t("s53")); }
   const result = parseExport(parsed, {
     onProgress: ({ phase, ratio }) => {
       if (phase === 'normalizing') {
         const pct = Math.round(Math.max(0, Math.min(1, ratio)) * 100);
-        ui.progressLabel.textContent = 'сводим связи'; setProgress(pct);
+        ui.progressLabel.textContent = t("s54"); setProgress(pct);
       }
     }
   });
@@ -625,15 +626,15 @@ function cancelImport({ announce = true } = {}) {
   if (ui.progressWrap) ui.progressWrap.hidden = true;
   setImporting(false);
   pendingFileName = '';
-  if (announce && wasImporting) setStatus(sourceModel ? 'импорт отменён. текущая карта сохранена.' : 'импорт отменён.');
+  if (announce && wasImporting) setStatus(sourceModel ? t("s55") : t("s56"));
 }
 function readFile(file) {
   if (!file) return;
   cancelImport({ announce: false });
-  if (file.size > 250 * 1024 * 1024) { finishImportError('файл больше 250 МБ. выберите меньший json или разбейте экспорт по чатам.'); return; }
+  if (file.size > 250 * 1024 * 1024) { finishImportError(t("s57")); return; }
   pendingFileName = file.name || '';
   const token = importToken;
-  ui.progressWrap.hidden = false; setProgress(0); ui.progressLabel.textContent = 'читаем файл'; setImporting(true); setStatus('файл остаётся в браузере. готовим карту…');
+  ui.progressWrap.hidden = false; setProgress(0); ui.progressLabel.textContent = t("s58"); setImporting(true); setStatus(t("s59"));
   let worker = null;
   if (typeof Worker === 'function') {
     try { worker = new Worker('./import-worker.js', { type: 'module' }); } catch { worker = null; }
@@ -643,31 +644,31 @@ function readFile(file) {
     worker.onmessage = (event) => {
       if (token !== importToken) { worker.terminate(); return; }
       const payload = event.data || {};
-      if (payload.type === 'progress') { ui.progressLabel.textContent = payload.label || 'разбираем файл'; setProgress(payload.percent || 0); return; }
+      if (payload.type === 'progress') { ui.progressLabel.textContent = translateMessage(payload.label) || t("s60"); setProgress(payload.percent || 0); return; }
       activeWorker = null; worker.terminate();
-      if (payload.type === 'error') { finishImportError(payload.message || 'формат файла не распознан.'); return; }
-      try { applyModel(payload.model); setImporting(false); setProgress(100); ui.progressLabel.textContent = 'готово'; progressTimer = setTimeout(() => { if (token === importToken) ui.progressWrap.hidden = true; }, 700); }
-      catch (error) { finishImportError(error.userMessage || error.message || 'формат файла не распознан.'); }
+      if (payload.type === 'error') { finishImportError(translateMessage(payload.message) || t("s1")); return; }
+      try { applyModel(payload.model); setImporting(false); setProgress(100); ui.progressLabel.textContent = t("s61"); progressTimer = setTimeout(() => { if (token === importToken) ui.progressWrap.hidden = true; }, 700); }
+      catch (error) { finishImportError(error.userMessage || error.message || t("s1")); }
     };
-    worker.onerror = () => { if (token !== importToken) return; finishImportError('не удалось обработать файл. попробуйте выбрать его ещё раз.'); };
+    worker.onerror = () => { if (token !== importToken) return; finishImportError(t("s62")); };
     const reader = new FileReader(); activeReader = reader;
-    reader.onprogress = (event) => { if (token !== importToken || !event.lengthComputable) return; const pct = Math.round(event.loaded / event.total * 100); ui.progressLabel.textContent = 'читаем файл'; setProgress(pct); };
-    reader.onerror = () => { if (token !== importToken) return; finishImportError('не удалось прочитать файл. попробуйте выбрать его ещё раз.'); };
+    reader.onprogress = (event) => { if (token !== importToken || !event.lengthComputable) return; const pct = Math.round(event.loaded / event.total * 100); ui.progressLabel.textContent = t("s58"); setProgress(pct); };
+    reader.onerror = () => { if (token !== importToken) return; finishImportError(t("s63")); };
     reader.onabort = () => { if (token === importToken) { activeReader = null; ui.progressWrap.hidden = true; setImporting(false); } };
-    reader.onload = () => { if (token === importToken) { activeReader = null; worker.postMessage({ buffer: reader.result }, [reader.result]); } };
+    reader.onload = () => { if (token === importToken) { activeReader = null; worker.postMessage({ buffer: reader.result, locale: getLocale() }, [reader.result]); } };
     reader.readAsArrayBuffer(file);
     return;
   }
   const reader = new FileReader();
   activeReader = reader;
   reader.onprogress = (event) => { if (token !== importToken || !event.lengthComputable) return; const pct = Math.round(event.loaded / event.total * 100); setProgress(pct); };
-  reader.onerror = () => { if (token !== importToken) return; finishImportError('не удалось прочитать файл. попробуйте выбрать его ещё раз.'); };
+  reader.onerror = () => { if (token !== importToken) return; finishImportError(t("s63")); };
   reader.onabort = () => { if (token === importToken) { activeReader = null; ui.progressWrap.hidden = true; setImporting(false); } };
   reader.onload = () => {
     if (token !== importToken) return;
     activeReader = null;
-    try { parseAndRender(String(reader.result)); setImporting(false); setProgress(100); ui.progressLabel.textContent = 'готово'; progressTimer = setTimeout(() => { if (token === importToken) ui.progressWrap.hidden = true; }, 700); }
-    catch (error) { finishImportError(error.userMessage || error.message || 'формат файла не распознан.'); }
+    try { parseAndRender(String(reader.result)); setImporting(false); setProgress(100); ui.progressLabel.textContent = t("s61"); progressTimer = setTimeout(() => { if (token === importToken) ui.progressWrap.hidden = true; }, 700); }
+    catch (error) { finishImportError(error.userMessage || error.message || t("s1")); }
   };
   reader.readAsText(file);
 }
@@ -676,10 +677,10 @@ function clearData() {
   ui.relationTypes.forEach((input) => { input.checked = true; });
   cancelImport({ announce: false });
   ui.selectionStatus.textContent = '';
-  sourceModel = null; visibleModel = null; selectedId = null; previewId = null; activeFileName = ''; pendingFileName = ''; ui.file.value = ''; ui.datasetLabel.textContent = 'файл не выбран'; setEnabled(false);
-  ui.chatFilter.innerHTML = '<option value="all">все чаты</option>'; ui.personFilter.innerHTML = '<option value="all">все участники</option>'; ui.fromDate.value = ''; ui.toDate.value = ''; ui.fromDate.min = ''; ui.fromDate.max = ''; ui.toDate.min = ''; ui.toDate.max = '';
+  sourceModel = null; visibleModel = null; selectedId = null; previewId = null; activeFileName = ''; pendingFileName = ''; ui.file.value = ''; ui.datasetLabel.textContent = t("s5"); setEnabled(false);
+  ui.chatFilter.innerHTML = t("s64"); ui.personFilter.innerHTML = t("s65"); ui.fromDate.value = ''; ui.toDate.value = ''; ui.fromDate.min = ''; ui.fromDate.max = ''; ui.toDate.min = ''; ui.toDate.max = '';
   ui.viewMode.value = 'auto'; ui.relationsOnly.checked = false; isDemo = false; $('node-search').value = '';
-  newArchive = false; layoutCache.clear(); motion.cancelAll(); cancelExport(); endPan(); ui.progressWrap.hidden = true; setProgress(0); setStatus('данные удалены из памяти страницы.'); zoom = 1; pan = { x: 0, y: 0 }; updateScale(); resetInspector(); renderSliceSummary(null); updateAltText(null, []); renderGraph(null); renderTimeline(null); syncWorkspace();
+  newArchive = false; layoutCache.clear(); motion.cancelAll(); cancelExport(); endPan(); ui.progressWrap.hidden = true; setProgress(0); setStatus(t("s66")); zoom = 1; pan = { x: 0, y: 0 }; updateScale(); resetInspector(); renderSliceSummary(null); updateAltText(null, []); renderGraph(null); renderTimeline(null); syncWorkspace();
 }
 function download(name, type, body) { const blob = body instanceof Blob ? body : new Blob([body], { type }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = name; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
 function exportableSvg() {
@@ -715,7 +716,7 @@ function cancelExport() {
     ui.exportPng.setAttribute('aria-busy', 'false');
     ui.exportPng.querySelector('span').textContent = '↓';
     ui.exportPng.disabled = !displayedNodes.length;
-    setStatus('подготовка png отменена: карта изменилась. скачайте новый срез.');
+    setStatus(t("s67"));
   }
   for (const [button, timer] of exportFeedbackTimers) {
     clearTimeout(timer); delete button.dataset.result; button.querySelector('span').textContent = '↓';
@@ -728,8 +729,8 @@ function exportSvg() {
     const source = `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(exportableSvg())}`;
     download('telegram-constellation.svg', 'image/svg+xml;charset=utf-8', source);
     exportFeedback(ui.exportSvg);
-    setStatus('svg подготовлен. скачивание началось.');
-  } catch { exportFeedback(ui.exportSvg, false); setStatus('не удалось подготовить svg. попробуйте ещё раз.', true); }
+    setStatus(t("s68"));
+  } catch { exportFeedback(ui.exportSvg, false); setStatus(t("s69"), true); }
 }
 function exportPng() {
   if (!displayedNodes.length || exportJob) return;
@@ -740,13 +741,13 @@ function exportPng() {
   exportJob = job;
   ui.exportPng.setAttribute('aria-busy', 'true'); ui.exportPng.disabled = true;
   ui.exportPng.querySelector('span').textContent = '…';
-  setStatus('готовим png текущей карты…');
+  setStatus(t("s70"));
   const current = () => exportJob === job && token === importToken && version === renderVersion && visibleModel;
   const finish = (success) => {
     exportJob = null; image.onload = image.onerror = null;
     ui.exportPng.setAttribute('aria-busy', 'false'); ui.exportPng.disabled = !displayedNodes.length;
     exportFeedback(ui.exportPng, success);
-    setStatus(success ? 'png подготовлен. скачивание началось.' : 'не удалось подготовить png. скачайте карту в svg.', !success);
+    setStatus(success ? t("s71") : t("s72"), !success);
   };
   image.onload = () => {
     if (!current()) return;
@@ -786,17 +787,17 @@ function svgPoint(clientX, clientY) {
 }
 
 function renderExplorer() {
-  const query = $('node-search').value.trim().toLocaleLowerCase('ru-RU');
+  const query = $('node-search').value.trim().toLocaleLowerCase(localeTag());
   const nodes = [...displayedNodes].sort((a, b) => Number(b.messageCount) - Number(a.messageCount));
   const list = $('node-list');
   const focused = list.contains(document.activeElement) ? document.activeElement : null;
   const existing = new Map([...list.children].map((row) => [row.dataset.nodeId, row]));
   $('node-count').textContent = fmtNum(nodes.length);
-  const found = nodes.filter((node) => nodeLabel(node).toLocaleLowerCase('ru-RU').includes(query));
+  const found = nodes.filter((node) => nodeLabel(node).toLocaleLowerCase(localeTag()).includes(query));
   const foundIds = new Set(found.map((node) => String(node.id)));
   for (const [id, row] of existing) if (!foundIds.has(id)) row.remove();
   $('node-list-empty').hidden = Boolean(found.length) || !sourceModel;
-  $('node-list-empty').textContent = nodes.length ? 'ничего не найдено. попробуйте другое имя.' : 'в этом срезе нет узлов. сбросьте фильтры.';
+  $('node-list-empty').textContent = nodes.length ? t("s73") : t("s74");
   const max = Math.max(...nodes.map((node) => Number(node.messageCount)), 1);
   found.forEach((node, index) => {
     const id = String(node.id);
@@ -815,7 +816,7 @@ function renderExplorer() {
       });
     }
     row.classList.toggle('is-active', Number(node.messageCount) / max >= .75);
-    row.setAttribute('aria-label', `${nodeLabel(node)}, ${fmtNum(node.messageCount)} сообщений, показать связи`);
+    row.setAttribute('aria-label', t("s75", { p0: nodeLabel(node), p1: fmtNum(node.messageCount), count: node.messageCount }));
     row.querySelector('.node-avatar').textContent = nodeLabel(node).slice(0, 1);
     row.querySelector('.node-name').textContent = nodeLabel(node);
     row.querySelector('.node-name').title = nodeLabel(node);
@@ -830,7 +831,7 @@ function syncWorkspace() {
   renderImportNotes(sourceModel);
   const relationLabels = relationNamesFor(visibleModel);
   ui.relationTypes.forEach((input) => { input.closest('label').lastElementChild.textContent = relationLabels[input.dataset.relationType]; });
-  $('relation-filter-help').textContent = relationLabels.shared === 'общие чаты' ? 'общий чат и близость по времени не означают прямой разговор.' : 'общие участники и близость по времени дают косвенные признаки связи.';
+  $('relation-filter-help').textContent = relationLabels.shared === t("s76") ? t("s77") : t("s78");
   document.querySelector('#legend-dialog .legend-line--shared').nextElementSibling.textContent = relationLabels.shared;
   const loaded = Boolean(sourceModel);
   document.body.classList.toggle('has-data', loaded);
@@ -839,8 +840,8 @@ function syncWorkspace() {
   document.querySelector('.start-actions').hidden = loaded;
   document.querySelector('.archive-actions').hidden = !loaded;
   $('demo-banner').hidden = !loaded || !isDemo;
-  $('import-heading').textContent = loaded ? (isDemo ? 'откройте свой архив' : 'ваш файл') : 'загрузите архив';
-  document.querySelector('.dropzone__title').textContent = loaded ? 'выбрать другой файл' : 'выбрать файл';
+  $('import-heading').textContent = loaded ? (isDemo ? t("s79") : t("s80")) : t("s81");
+  document.querySelector('.dropzone__title').textContent = loaded ? t("s82") : t("s83");
   const isParticipants = visibleModel?.nodes?.[0]?.type === 'participant' || (ui.viewMode.value === 'participants') || (ui.viewMode.value === 'auto' && sourceModel?.chatNodes?.length === 1);
   $('mode-chats').setAttribute('aria-pressed', String(!isParticipants));
   $('mode-participants').setAttribute('aria-pressed', String(isParticipants));
@@ -848,7 +849,7 @@ function syncWorkspace() {
   $('mode-chats').disabled = !loaded; $('mode-participants').disabled = !loaded;
   $('stat-messages').textContent = fmtNum(visibleModel?.stats?.messageCount);
   $('stat-nodes').textContent = fmtNum(displayedNodes.length);
-  $('stat-node-type').textContent = pluralRu(displayedNodes.length, isParticipants ? ['участник', 'участника', 'участников'] : ['чат', 'чата', 'чатов']);
+  $('stat-node-type').textContent = pluralRu(displayedNodes.length, isParticipants ? [t("s29"), t("s84"), t("s85")] : [t("s30"), t("s86"), t("s87")]);
   $('stat-relations').textContent = fmtNum(visibleModel?.edges?.length);
   const filterCount = [ui.chatFilter.value !== 'all', ui.personFilter.value !== 'all', Boolean(ui.fromDate.value || ui.toDate.value), ui.relationsOnly.checked, ui.relationTypes.some((input) => !input.checked)].filter(Boolean).length;
   $('filter-count').hidden = !filterCount; $('filter-count').textContent = filterCount;
@@ -858,16 +859,16 @@ function syncWorkspace() {
 }
 function openDemo() {
   cancelImport({ announce: false });
-  pendingFileName = 'вымышленный пример';
+  pendingFileName = t("s88");
   applyModel(parseExport(createDemoExport()), { demo: true });
-  setStatus('пример открыт. все имена и разговоры вымышлены.');
+  setStatus(t("s89"));
 }
 function clearSelection() {
   motion.cancel('selection');
   cancelExport();
   renderVersion += 1;
   selectedId = null; previewId = null; resetInspector(); applySelection();
-  ui.selectionStatus.textContent = 'выбор снят.';
+  ui.selectionStatus.textContent = t("s90");
 }
 function updateMapBounds() {
   if (matchMedia('(max-width: 650px)').matches) {
@@ -959,4 +960,16 @@ function wire() {
   window.addEventListener('pagehide', () => { cancelImport({ announce: false }); cancelExport(); endPan(); motion.cancelAll(); });
 }
 
+mountLocale(previous => {
+  const status = ui.status.textContent;
+  if (sourceModel) {
+    if (isDemo) { sourceModel = parseExport(createDemoExport()); activeFileName = t('s88'); }
+    timelineKey = null;
+    render();
+    ui.chatFilter.options[0].textContent = t('s3');
+    ui.personFilter.options[0].textContent = t('s4');
+  } else syncWorkspace();
+  updateScale();
+  ui.status.textContent = translateMessage(status, previous);
+});
 buildGrid(); wire(); wireWorkspace(); setEnabled(false); setImporting(false); syncWorkspace();

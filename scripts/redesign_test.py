@@ -8,7 +8,7 @@ PORT = os.environ.get('APP_PORT', '4175')
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
-    page = browser.new_page(viewport={'width': 1440, 'height': 1000})
+    page = browser.new_page(locale="ru-RU", viewport={'width': 1440, 'height': 1000})
     errors, requests = [], []
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.on('request', lambda request: requests.append(request.url))

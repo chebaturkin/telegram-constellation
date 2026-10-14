@@ -1,129 +1,122 @@
-<!doctype html>
-<html lang="ru">
+<!DOCTYPE html>
+
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="telegram constellation: карта чатов, участников и активности из вашего экспорта. файл остаётся в браузере." />
-  <meta name="theme-color" content="#f3f6fa" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'none'; form-action 'none';" />
-  <title>telegram constellation: карта ваших разговоров</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="telegram constellation: a map of chats, participants and activity from your export. your file stays in your browser." data-i18n-content="s127" name="description"/>
+<meta content="#f3f6fa" name="theme-color"/>
+<meta content="default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'none'; form-action 'none';" http-equiv="Content-Security-Policy"/>
+<title data-i18n="s147">telegram constellation: a map of your conversations</title>
+<link href="styles.css" rel="stylesheet"/>
 </head>
 <body>
-  <a class="skip-link" href="#main-content">перейти к карте</a>
-  <div class="app-shell">
-    <header class="masthead">
-      <a class="brand" href="./" aria-label="telegram constellation, первый экран">
-        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><path d="M10 27 19 11 31 19 10 27 29 32 31 19"/><circle cx="10" cy="27" r="3.5"/><circle cx="19" cy="11" r="3.5"/><circle cx="31" cy="19" r="3.5"/><circle cx="29" cy="32" r="2.5"/></svg>
-        <h1>telegram constellation</h1>
-      </a>
-      <div class="header-actions">
-        <span class="privacy-stamp"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m10 2 6 3v5c0 4-6 7-6 7s-6-3-6-7V5l6-3Z"/><path d="m7 9 2 2 4-4"/></svg>файл остаётся в браузере</span>
-        <button class="button button--quiet" id="open-help" type="button">как получить архив <span aria-hidden="true">↗</span></button>
-        <a class="github-link" href="https://github.com/chebaturkin/telegram-constellation" target="_blank" rel="noreferrer" aria-label="проект на github"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4 1-4-2-6-2m12 5v-4c0-1 .1-2-.6-2.6 3.3-.4 6.6-1.6 6.6-7.3A5.7 5.7 0 0 0 19.5 4c.2-1 .2-2-.3-3 0 0-1.2-.4-4 1.5a13.7 13.7 0 0 0-7 0C5.4.6 4.2 1 4.2 1c-.5 1-.5 2-.3 3A5.7 5.7 0 0 0 2.4 8c0 5.7 3.3 7 6.6 7.4-.5.5-.7 1.3-.7 2.6v4"/></svg></a>
-      </div>
-    </header>
-
-    <main id="main-content" tabindex="-1">
-      <div class="workspace-heading" id="workspace-heading" hidden><div><p class="eyebrow">ваш архив</p><h2>разговоры, которые связывают</h2></div><div class="dataset-label" id="dataset-label">файл не выбран</div></div>
-      <div class="demo-banner" id="demo-banner" role="status" hidden><span><span class="demo-dot" aria-hidden="true"></span>вы смотрите пример с вымышленными данными</span><button class="text-button" id="demo-upload" type="button">открыть свой архив <span aria-hidden="true">→</span></button></div>
-      <div class="layout">
-        <aside class="rail" aria-label="архив, фильтры и список узлов">
-          <section class="sidebar-section import-card" aria-labelledby="import-heading">
-            <div class="section-heading"><h2 id="import-heading">загрузите архив</h2><span class="local-badge">локально</span></div>
-            <p class="section-copy">выберите <span class="mono">result.json</span> из экспорта telegram desktop.</p>
-            <label class="dropzone" id="dropzone" for="file-input" tabindex="0" role="button" aria-label="выбрать файл result.json">
-              <svg class="dropzone__glyph" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 21V5m-6 6 6-6 6 6M6 21v5h20v-5"/></svg>
-              <span class="dropzone__text"><span class="dropzone__title">выбрать файл</span><span class="dropzone__hint">или перетащите его сюда · json до 250 мб</span></span>
-              <input id="file-input" type="file" accept="application/json,.json" hidden />
-            </label>
-            <div class="progress-wrap" id="progress-wrap" hidden>
-              <div class="progress-label"><span id="progress-label">читаем файл</span><span id="progress-percent">0%</span></div>
-              <div class="progress-track" id="progress-track" role="progressbar" aria-label="чтение файла" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="progress-bar"></span></div>
-              <button class="text-button progress-cancel" id="cancel-import" type="button" hidden>отменить загрузку</button>
-            </div>
-            <div class="status" id="status" role="status" aria-live="polite">файл остаётся в браузере. тексты сообщений не выводятся.</div>
-            <div class="start-actions"><div class="or-divider"><span>сначала попробовать</span></div><button class="button button--secondary" id="open-demo" type="button"><span aria-hidden="true">◉</span> открыть пример <span aria-hidden="true">→</span></button></div>
-            <div class="archive-actions" hidden><button class="text-button" id="clear-data" type="button" disabled>удалить данные</button><span class="archive-note">из памяти страницы</span></div>
-          </section>
-
-          <details class="sidebar-section filters-panel" id="filters-panel" open hidden>
-            <summary><h2>фильтры</h2><span class="filter-count" id="filter-count" hidden>0</span><span class="chevron" aria-hidden="true">⌄</span></summary>
-            <div class="filters-content">
-              <label class="field-label" for="chat-filter">чат</label>
-              <select class="field-control" id="chat-filter" disabled><option value="all">все чаты</option></select>
-              <label class="field-label" for="person-filter">участник</label>
-              <select class="field-control" id="person-filter" disabled><option value="all">все участники</option></select>
-              <div class="date-fields"><div><label class="field-label" for="from-date">с даты</label><input class="field-control" id="from-date" type="date" disabled /></div><div><label class="field-label" for="to-date">по дату</label><input class="field-control" id="to-date" type="date" disabled /></div></div>
-              <fieldset class="relation-filters" aria-describedby="relation-filter-help">
-                <legend>показать связи</legend>
-                <label class="check-row"><input type="checkbox" data-relation-type="reply" checked disabled /><span class="legend-line legend-line--reply" aria-hidden="true"></span><span>ответы</span></label>
-                <label class="check-row"><input type="checkbox" data-relation-type="mention" checked disabled /><span class="legend-line legend-line--mention" aria-hidden="true"></span><span>упоминания</span></label>
-                <label class="check-row"><input type="checkbox" data-relation-type="shared" checked disabled /><span class="legend-line legend-line--shared" aria-hidden="true"></span><span>общие чаты</span></label>
-                <label class="check-row"><input type="checkbox" data-relation-type="time" checked disabled /><span class="legend-line legend-line--time" aria-hidden="true"></span><span>рядом по времени</span></label>
-                <p id="relation-filter-help">общий чат и близость по времени не означают прямой разговор.</p>
-              </fieldset>
-              <label class="check-row"><input id="relations-only" type="checkbox" disabled /><span>только узлы со связями</span></label>
-              <button class="button button--quiet filter-reset" id="reset-filters" type="button" disabled>сбросить фильтры</button>
-            </div>
-          </details>
-
-          <section class="sidebar-section explorer-panel" id="explorer-panel" aria-labelledby="explorer-heading" hidden>
-            <div class="section-heading"><h2 id="explorer-heading">на карте</h2><span class="count-badge" id="node-count">0</span></div>
-            <label class="search-field" for="node-search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8" cy="8" r="5"/><path d="m12 12 5 5"/></svg><input id="node-search" type="search" placeholder="найти на карте" autocomplete="off" aria-label="найти чат или участника" /></label>
-            <div class="node-list" id="node-list" aria-label="узлы на карте"></div>
-            <p class="node-list-empty" id="node-list-empty" role="status" hidden>ничего не найдено. попробуйте другое имя.</p>
-            <p class="explorer-hint">выберите имя, чтобы увидеть его связи.</p>
-          </section>
-        </aside>
-
-        <div class="atlas-column">
-          <section class="welcome" id="welcome" aria-labelledby="welcome-title">
-            <p class="eyebrow"><span class="tiny-star" aria-hidden="true">✳</span> у каждой переписки есть своя карта</p>
-            <h2 id="welcome-title">ваши разговоры,<br /><span>в одной карте.</span></h2>
-            <p class="welcome-copy">посмотрите связи между чатами и участниками, найдите нужное имя и сравните активность по времени.</p>
-            <div class="welcome-notes"><span><span aria-hidden="true">↗</span> чаты и участники</span><span><span aria-hidden="true">◷</span> активность по времени</span><span><span aria-hidden="true">↓</span> карта в svg и png</span></div>
-            <div class="preview-map" aria-hidden="true">
-              <svg viewBox="0 0 680 290"><g class="preview-edges"><path d="M85 160 220 68 342 162 504 68 591 193 342 162 230 248 85 160M220 68 230 248M342 162 505 245 591 193M220 68 504 68"/></g><g class="preview-nodes"><circle cx="85" cy="160" r="12"/><circle cx="220" cy="68" r="22"/><circle class="preview-hot" cx="342" cy="162" r="30"/><circle cx="504" cy="68" r="16"/><circle cx="591" cy="193" r="11"/><circle cx="230" cy="248" r="14"/><circle cx="505" cy="245" r="8"/></g><g class="preview-labels"><text x="50" y="195">идеи</text><text x="186" y="30">команда</text><text x="386" y="167">разговоры</text><text x="535" y="72">друзья</text></g></svg>
-              <span class="preview-caption"><span class="legend-dot legend-dot--blue"></span> так выглядит карта связей</span>
-            </div>
-          </section>
-
-          <div class="workspace-content" id="workspace-content" hidden>
-            <div class="overview" aria-label="текущий срез"><div><span class="overview-label">сообщения</span><strong id="stat-messages">0</strong></div><div><span class="overview-label">на карте</span><strong id="stat-nodes">0</strong><span id="stat-node-type">участников</span></div><div><span class="overview-label">связи</span><strong id="stat-relations">0</strong></div><p id="slice-summary" class="sr-only"></p></div>
-            <p class="import-notes" id="import-notes" role="status" hidden></p>
-            <section class="atlas-panel" aria-labelledby="atlas-heading">
-              <div class="atlas-panel__head">
-                <div class="map-title"><h2 id="atlas-heading">карта связей</h2><span class="map-live-dot" aria-hidden="true"></span></div>
-                <div class="mode-switch" role="group" aria-label="показать на карте"><button id="mode-chats" type="button" aria-pressed="false">чаты</button><button id="mode-participants" type="button" aria-pressed="false">участники</button></div>
-                <label class="sr-only" for="view-mode">режим карты</label><select class="sr-only" id="view-mode" disabled tabindex="-1"><option value="auto">авто</option><option value="chats">чаты</option><option value="participants">участники</option></select>
-                <div class="atlas-actions"><button class="button button--quiet" id="export-svg" type="button" disabled><span aria-hidden="true">↓</span> svg</button><button class="button button--quiet" id="export-png" type="button" disabled><span aria-hidden="true">↓</span> png</button></div>
-              </div>
-              <div class="slice-status" id="slice-status" role="status" aria-live="polite" hidden></div>
-              <aside class="inspector" id="inspector" aria-label="описание выбранного узла" hidden><div class="inspector-kicker"><span id="focus-kind">детали узла</span><button class="icon-button" id="close-selection" type="button" aria-label="снять выбор" hidden>×</button></div><h2 id="focus-title" tabindex="-1">выберите точку на карте</h2><p id="focus-copy">или найдите имя в списке слева. здесь появятся число сообщений, период и связи.</p><div class="sr-only" id="selection-status" role="status" aria-live="polite"></div><dl class="metrics" id="focus-metrics" hidden><div><dt>сообщения</dt><dd>-</dd></div><div><dt>связи</dt><dd>-</dd></div><div><dt>период</dt><dd>-</dd></div></dl><div class="relation-breakdown" id="relation-breakdown" hidden></div><section class="related-nodes" id="related-nodes" aria-labelledby="related-heading" hidden></section></aside>
-              <div class="atlas-frame" id="atlas-frame">
-                <svg id="atlas-svg" viewBox="0 0 1000 610" role="group" aria-labelledby="atlas-heading atlas-caption" tabindex="0"><desc id="atlas-caption">сеть чатов и участников. размер точки показывает число сообщений. выберите точку, чтобы увидеть её связи.</desc><g id="grid-layer"></g><g id="graph-layer"></g><g id="labels-layer"></g></svg>
-                <div class="atlas-empty" id="atlas-empty"><span aria-hidden="true">⌕</span><p class="atlas-empty__title" id="atlas-empty-title">здесь появится карта вашего архива</p><p id="atlas-empty-copy">загрузите экспорт, чтобы увидеть связи и периоды.</p><button class="button button--secondary" id="empty-reset" type="button" hidden>сбросить фильтры</button></div>
-                <div class="map-hint"><span aria-hidden="true">↔</span> перетаскивайте карту · нажмите на точку</div>
-                <div class="zoom-controls" aria-label="масштаб карты"><button class="zoom-button" id="zoom-out" type="button" disabled aria-label="уменьшить масштаб">−</button><button class="zoom-button zoom-button--readout" id="zoom-reset" type="button" disabled aria-label="сбросить масштаб">1×</button><button class="zoom-button" id="zoom-in" type="button" disabled aria-label="увеличить масштаб">+</button><button class="zoom-button" id="reset-view" type="button" disabled aria-label="вместить карту в экран">⤢</button></div>
-              </div>
-              <div class="atlas-footer"><div class="legend-inline"><span><i class="legend-dot legend-dot--rust"></i> больше сообщений</span><span><i class="legend-dot legend-dot--blue"></i> меньше сообщений</span><span><i class="legend-line legend-line--shared"></i> связь</span></div><button class="text-button" id="open-legend" type="button">как читать карту <span aria-hidden="true">?</span></button><span class="sr-only" id="atlas-scale">масштаб 1.0×</span></div>
-            </section>
-
-            <div class="detail-row">
-              <section class="timeline-section" aria-labelledby="timeline-heading"><div class="timeline-head"><div><h2 id="timeline-heading">активность по времени</h2><p>выберите период, чтобы посмотреть его на карте</p></div><button class="text-button" id="reset-period" type="button" hidden>весь период</button></div><div class="timeline-frame"><svg id="timeline-svg" viewBox="0 0 1200 170" role="group" aria-labelledby="timeline-heading"><g id="timeline-layer"></g></svg><p class="timeline-empty" id="timeline-empty">загрузите экспорт, чтобы увидеть периоды активности.</p></div><div class="timeline-range mono" id="timeline-range">-</div></section>
-
-            </div>
-            <details class="text-description"><summary>текстовое описание карты</summary><div class="alt-text" id="alt-text">загрузите файл, чтобы получить текстовое описание сети.</div></details>
-          </div>
-        </div>
-      </div>
-    </main>
-    <footer class="site-footer"><p>тексты сообщений не выводятся. данные хранятся только в памяти открытой страницы.</p><span>сделано, чтобы видеть связи <span aria-hidden="true">✳</span></span></footer>
-  </div>
-
-  <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title"><div class="dialog-head"><h2 id="help-title">как получить архив telegram</h2><button class="icon-button" data-close-dialog="help-dialog" type="button" aria-label="закрыть инструкцию">×</button></div><p>нужна версия telegram desktop для компьютера.</p><ol class="help-steps"><li><span>откройте настройки</span><p>перейдите в «продвинутые настройки» → «экспорт данных из telegram».</p></li><li><span>выберите переписки</span><p>отметьте нужные чаты. для карты достаточно сообщений. фото и видео можно не включать.</p></li><li><span>сохраните в json</span><p>в формате экспорта выберите машиночитаемый json. после завершения найдите <code>result.json</code> в папке экспорта.</p></li></ol><div class="dialog-note">можно экспортировать и один чат: откройте его меню → «экспорт истории чата» → json.</div><button class="button button--primary" data-close-dialog="help-dialog" type="button">понятно</button></dialog>
-  <dialog id="legend-dialog" class="help-dialog" aria-labelledby="legend-heading"><div class="dialog-head"><h2 id="legend-heading">как читать карту</h2><button class="icon-button" data-close-dialog="legend-dialog" type="button" aria-label="закрыть легенду">×</button></div><p>каждая точка обозначает чат или участника. чем больше сообщений, тем крупнее точка. коралловый цвет выделяет самые активные узлы.</p><div class="legend-list"><div class="legend-item"><span class="legend-line legend-line--reply"></span><span>ответы на сообщения</span></div><div class="legend-item"><span class="legend-line legend-line--mention"></span><span>упоминания участников</span></div><div class="legend-item"><span class="legend-line legend-line--shared"></span><span>общие чаты</span></div><div class="legend-item"><span class="legend-line legend-line--time"></span><span>сообщения рядом по времени</span></div></div><div class="dialog-note">нажмите на точку, чтобы выделить её связи. колесо меняет масштаб, перетаскивание двигает карту. с клавиатуры: tab открывает карту, стрелки перемещают фокус между точками, enter выбирает точку, esc снимает выбор.</div><button class="button button--primary" data-close-dialog="legend-dialog" type="button">к карте</button></dialog>
-  <script type="module" src="app.js"></script>
+<a class="skip-link" data-i18n="s148" href="#main-content">перейти к карте</a>
+<div class="app-shell">
+<header class="masthead">
+<a aria-label="telegram constellation, первый экран" class="brand" data-i18n-aria-label="s128" href="./">
+<svg aria-hidden="true" class="brand-mark" viewbox="0 0 40 40"><path d="M10 27 19 11 31 19 10 27 29 32 31 19"></path><circle cx="10" cy="27" r="3.5"></circle><circle cx="19" cy="11" r="3.5"></circle><circle cx="31" cy="19" r="3.5"></circle><circle cx="29" cy="32" r="2.5"></circle></svg>
+<h1>telegram constellation</h1>
+</a>
+<div class="header-actions"><nav aria-label="language" class="language-control" data-language-control=""><button aria-label="русский" aria-pressed="false" data-language="ru" lang="ru" type="button">ru</button><span aria-hidden="true">/</span><button aria-label="english" aria-pressed="false" data-language="en" lang="en" type="button">en</button></nav>
+<span class="privacy-stamp"><svg aria-hidden="true" viewbox="0 0 20 20"><path d="m10 2 6 3v5c0 4-6 7-6 7s-6-3-6-7V5l6-3Z"></path><path d="m7 9 2 2 4-4"></path></svg><span data-i18n="s149">файл остаётся в браузере</span></span>
+<button class="button button--quiet" id="open-help" type="button"><span data-i18n="s150">как получить архив</span> <span aria-hidden="true">↗</span></button>
+<a aria-label="проект на github" class="github-link" data-i18n-aria-label="s129" href="https://github.com/chebaturkin/telegram-constellation" rel="noreferrer" target="_blank"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M9 19c-4 1-4-2-6-2m12 5v-4c0-1 .1-2-.6-2.6 3.3-.4 6.6-1.6 6.6-7.3A5.7 5.7 0 0 0 19.5 4c.2-1 .2-2-.3-3 0 0-1.2-.4-4 1.5a13.7 13.7 0 0 0-7 0C5.4.6 4.2 1 4.2 1c-.5 1-.5 2-.3 3A5.7 5.7 0 0 0 2.4 8c0 5.7 3.3 7 6.6 7.4-.5.5-.7 1.3-.7 2.6v4"></path></svg></a>
+</div>
+</header>
+<main id="main-content" tabindex="-1">
+<div class="workspace-heading" hidden="" id="workspace-heading"><div><p class="eyebrow" data-i18n="s151">ваш архив</p><h2 data-i18n="s152">разговоры, которые связывают</h2></div><div class="dataset-label" data-i18n="s5" id="dataset-label">файл не выбран</div></div>
+<div class="demo-banner" hidden="" id="demo-banner" role="status"><span><span aria-hidden="true" class="demo-dot"></span><span data-i18n="s153">вы смотрите пример с вымышленными данными</span></span><button class="text-button" id="demo-upload" type="button"><span data-i18n="s154">открыть свой архив</span> <span aria-hidden="true">→</span></button></div>
+<div class="layout">
+<aside aria-label="архив, фильтры и список узлов" class="rail" data-i18n-aria-label="s130">
+<section aria-labelledby="import-heading" class="sidebar-section import-card">
+<div class="section-heading"><h2 data-i18n="s81" id="import-heading">загрузите архив</h2><span class="local-badge" data-i18n="s155">локально</span></div>
+<p class="section-copy"><span data-i18n="s156">выберите</span> <span class="mono">result.json</span> <span data-i18n="s157">из экспорта telegram desktop.</span></p>
+<label aria-label="выбрать файл result.json" class="dropzone" data-i18n-aria-label="s131" for="file-input" id="dropzone" role="button" tabindex="0">
+<svg aria-hidden="true" class="dropzone__glyph" viewbox="0 0 32 32"><path d="M16 21V5m-6 6 6-6 6 6M6 21v5h20v-5"></path></svg>
+<span class="dropzone__text"><span class="dropzone__title" data-i18n="s83">выбрать файл</span><span class="dropzone__hint" data-i18n="s158">или перетащите его сюда · json до 250 мб</span></span>
+<input accept="application/json,.json" hidden="" id="file-input" type="file"/>
+</label>
+<div class="progress-wrap" hidden="" id="progress-wrap">
+<div class="progress-label"><span data-i18n="s58" id="progress-label">читаем файл</span><span id="progress-percent">0%</span></div>
+<div aria-label="чтение файла" aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" class="progress-track" data-i18n-aria-label="s132" id="progress-track" role="progressbar"><span id="progress-bar"></span></div>
+<button class="text-button progress-cancel" data-i18n="s159" hidden="" id="cancel-import" type="button">отменить загрузку</button>
+</div>
+<div aria-live="polite" class="status" data-i18n="s160" id="status" role="status">файл остаётся в браузере. тексты сообщений не выводятся.</div>
+<div class="start-actions"><div class="or-divider"><span data-i18n="s161">сначала попробовать</span></div><button class="button button--secondary" id="open-demo" type="button"><span aria-hidden="true">◉</span> <span data-i18n="s162">открыть пример</span> <span aria-hidden="true">→</span></button></div>
+<div class="archive-actions" hidden=""><button class="text-button" data-i18n="s163" disabled="" id="clear-data" type="button">удалить данные</button><span class="archive-note" data-i18n="s164">из памяти страницы</span></div>
+</section>
+<details class="sidebar-section filters-panel" hidden="" id="filters-panel" open="">
+<summary><h2 data-i18n="s165">фильтры</h2><span class="filter-count" hidden="" id="filter-count">0</span><span aria-hidden="true" class="chevron">⌄</span></summary>
+<div class="filters-content">
+<label class="field-label" data-i18n="s30" for="chat-filter">чат</label>
+<select class="field-control" disabled="" id="chat-filter"><option data-i18n="s3" value="all">все чаты</option></select>
+<label class="field-label" data-i18n="s29" for="person-filter">участник</label>
+<select class="field-control" disabled="" id="person-filter"><option data-i18n="s4" value="all">все участники</option></select>
+<div class="date-fields"><div><label class="field-label" data-i18n="s166" for="from-date">с даты</label><input class="field-control" disabled="" id="from-date" type="date"/></div><div><label class="field-label" data-i18n="s167" for="to-date">по дату</label><input class="field-control" disabled="" id="to-date" type="date"/></div></div>
+<fieldset aria-describedby="relation-filter-help" class="relation-filters">
+<legend data-i18n="s168">показать связи</legend>
+<label class="check-row"><input checked="" data-relation-type="reply" disabled="" type="checkbox"/><span aria-hidden="true" class="legend-line legend-line--reply"></span><span data-i18n="s95">ответы</span></label>
+<label class="check-row"><input checked="" data-relation-type="mention" disabled="" type="checkbox"/><span aria-hidden="true" class="legend-line legend-line--mention"></span><span data-i18n="s96">упоминания</span></label>
+<label class="check-row"><input checked="" data-relation-type="shared" disabled="" type="checkbox"/><span aria-hidden="true" class="legend-line legend-line--shared"></span><span data-i18n="s76">общие чаты</span></label>
+<label class="check-row"><input checked="" data-relation-type="time" disabled="" type="checkbox"/><span aria-hidden="true" class="legend-line legend-line--time"></span><span data-i18n="s169">рядом по времени</span></label>
+<p data-i18n="s77" id="relation-filter-help">общий чат и близость по времени не означают прямой разговор.</p>
+</fieldset>
+<label class="check-row"><input disabled="" id="relations-only" type="checkbox"/><span data-i18n="s170">только узлы со связями</span></label>
+<button class="button button--quiet filter-reset" data-i18n="s171" disabled="" id="reset-filters" type="button">сбросить фильтры</button>
+</div>
+</details>
+<section aria-labelledby="explorer-heading" class="sidebar-section explorer-panel" hidden="" id="explorer-panel">
+<div class="section-heading"><h2 data-i18n="s172" id="explorer-heading">на карте</h2><span class="count-badge" id="node-count">0</span></div>
+<label class="search-field" for="node-search"><svg aria-hidden="true" viewbox="0 0 20 20"><circle cx="8" cy="8" r="5"></circle><path d="m12 12 5 5"></path></svg><input aria-label="найти чат или участника" autocomplete="off" data-i18n-aria-label="s133" data-i18n-placeholder="s134" id="node-search" placeholder="найти на карте" type="search"/></label>
+<div aria-label="узлы на карте" class="node-list" data-i18n-aria-label="s135" id="node-list"></div>
+<p class="node-list-empty" data-i18n="s73" hidden="" id="node-list-empty" role="status">ничего не найдено. попробуйте другое имя.</p>
+<p class="explorer-hint" data-i18n="s173">выберите имя, чтобы увидеть его связи.</p>
+</section>
+</aside>
+<div class="atlas-column">
+<section aria-labelledby="welcome-title" class="welcome" id="welcome">
+<p class="eyebrow"><span aria-hidden="true" class="tiny-star">✳</span> <span data-i18n="s174">у каждой переписки есть своя карта</span></p>
+<h2 id="welcome-title"><span data-i18n="s175">ваши разговоры,</span><br/><span data-i18n="s176">в одной карте.</span></h2>
+<p class="welcome-copy" data-i18n="s177">посмотрите связи между чатами и участниками, найдите нужное имя и сравните активность по времени.</p>
+<div class="welcome-notes"><span><span aria-hidden="true">↗</span> <span data-i18n="s178">чаты и участники</span></span><span><span aria-hidden="true">◷</span> <span data-i18n="s179">активность по времени</span></span><span><span aria-hidden="true">↓</span> <span data-i18n="s180">карта в svg и png</span></span></div>
+<div aria-hidden="true" class="preview-map">
+<svg viewbox="0 0 680 290"><g class="preview-edges"><path d="M85 160 220 68 342 162 504 68 591 193 342 162 230 248 85 160M220 68 230 248M342 162 505 245 591 193M220 68 504 68"></path></g><g class="preview-nodes"><circle cx="85" cy="160" r="12"></circle><circle cx="220" cy="68" r="22"></circle><circle class="preview-hot" cx="342" cy="162" r="30"></circle><circle cx="504" cy="68" r="16"></circle><circle cx="591" cy="193" r="11"></circle><circle cx="230" cy="248" r="14"></circle><circle cx="505" cy="245" r="8"></circle></g><g class="preview-labels"><text data-i18n="s181" x="50" y="195">идеи</text><text data-i18n="s182" x="186" y="30">команда</text><text data-i18n="s183" x="386" y="167">разговоры</text><text data-i18n="s120" x="535" y="72">друзья</text></g></svg>
+<span class="preview-caption"><span class="legend-dot legend-dot--blue"></span> <span data-i18n="s184">так выглядит карта связей</span></span>
+</div>
+</section>
+<div class="workspace-content" hidden="" id="workspace-content">
+<div aria-label="текущий срез" class="overview" data-i18n-aria-label="s136"><div><span class="overview-label" data-i18n="s7">сообщения</span><strong id="stat-messages">0</strong></div><div><span class="overview-label" data-i18n="s172">на карте</span><strong id="stat-nodes">0</strong><span data-i18n="s85" id="stat-node-type">участников</span></div><div><span class="overview-label" data-i18n="s13">связи</span><strong id="stat-relations">0</strong></div><p class="sr-only" id="slice-summary"></p></div>
+<p class="import-notes" hidden="" id="import-notes" role="status"></p>
+<section aria-labelledby="atlas-heading" class="atlas-panel">
+<div class="atlas-panel__head">
+<div class="map-title"><h2 data-i18n="s185" id="atlas-heading">карта связей</h2><span aria-hidden="true" class="map-live-dot"></span></div>
+<div aria-label="показать на карте" class="mode-switch" data-i18n-aria-label="s137" role="group"><button aria-pressed="false" data-i18n="s186" id="mode-chats" type="button">чаты</button><button aria-pressed="false" data-i18n="s187" id="mode-participants" type="button">участники</button></div>
+<label class="sr-only" data-i18n="s188" for="view-mode">режим карты</label><select class="sr-only" disabled="" id="view-mode" tabindex="-1"><option data-i18n="s189" value="auto">авто</option><option data-i18n="s186" value="chats">чаты</option><option data-i18n="s187" value="participants">участники</option></select>
+<div class="atlas-actions"><button class="button button--quiet" disabled="" id="export-svg" type="button"><span aria-hidden="true">↓</span> svg</button><button class="button button--quiet" disabled="" id="export-png" type="button"><span aria-hidden="true">↓</span> png</button></div>
+</div>
+<div aria-live="polite" class="slice-status" hidden="" id="slice-status" role="status"></div>
+<aside aria-label="описание выбранного узла" class="inspector" data-i18n-aria-label="s138" hidden="" id="inspector"><div class="inspector-kicker"><span data-i18n="s47" id="focus-kind">детали узла</span><button aria-label="снять выбор" class="icon-button" data-i18n-aria-label="s139" hidden="" id="close-selection" type="button">×</button></div><h2 data-i18n="s44" id="focus-title" tabindex="-1">выберите точку на карте</h2><p data-i18n="s46" id="focus-copy">или найдите имя в списке слева. здесь появятся число сообщений, период и связи.</p><div aria-live="polite" class="sr-only" id="selection-status" role="status"></div><dl class="metrics" hidden="" id="focus-metrics"><div><dt data-i18n="s7">сообщения</dt><dd>-</dd></div><div><dt data-i18n="s13">связи</dt><dd>-</dd></div><div><dt data-i18n="s190">период</dt><dd>-</dd></div></dl><div class="relation-breakdown" hidden="" id="relation-breakdown"></div><section aria-labelledby="related-heading" class="related-nodes" hidden="" id="related-nodes"></section></aside>
+<div class="atlas-frame" id="atlas-frame">
+<svg aria-labelledby="atlas-heading atlas-caption" id="atlas-svg" role="group" tabindex="0" viewbox="0 0 1000 610"><desc data-i18n="s191" id="atlas-caption">сеть чатов и участников. размер точки показывает число сообщений. выберите точку, чтобы увидеть её связи.</desc><g id="grid-layer"></g><g id="graph-layer"></g><g id="labels-layer"></g></svg>
+<div class="atlas-empty" id="atlas-empty"><span aria-hidden="true">⌕</span><p class="atlas-empty__title" data-i18n="s18" id="atlas-empty-title">здесь появится карта вашего архива</p><p data-i18n="s192" id="atlas-empty-copy">загрузите экспорт, чтобы увидеть связи и периоды.</p><button class="button button--secondary" data-i18n="s171" hidden="" id="empty-reset" type="button">сбросить фильтры</button></div>
+<div class="map-hint"><span aria-hidden="true">↔</span> <span data-i18n="s193">перетаскивайте карту · нажмите на точку</span></div>
+<div aria-label="масштаб карты" class="zoom-controls" data-i18n-aria-label="s140"><button aria-label="уменьшить масштаб" class="zoom-button" data-i18n-aria-label="s141" disabled="" id="zoom-out" type="button">−</button><button aria-label="сбросить масштаб" class="zoom-button zoom-button--readout" data-i18n-aria-label="s142" disabled="" id="zoom-reset" type="button">1×</button><button aria-label="увеличить масштаб" class="zoom-button" data-i18n-aria-label="s143" disabled="" id="zoom-in" type="button">+</button><button aria-label="вместить карту в экран" class="zoom-button" data-i18n-aria-label="s144" disabled="" id="reset-view" type="button">⤢</button></div>
+</div>
+<div class="atlas-footer"><div class="legend-inline"><span><i class="legend-dot legend-dot--rust"></i> <span data-i18n="s194">больше сообщений</span></span><span><i class="legend-dot legend-dot--blue"></i> <span data-i18n="s195">меньше сообщений</span></span><span><i class="legend-line legend-line--shared"></i> <span data-i18n="s12">связь</span></span></div><button class="text-button" id="open-legend" type="button"><span data-i18n="s196">как читать карту</span> <span aria-hidden="true">?</span></button><span class="sr-only" data-i18n="s197" id="atlas-scale">масштаб 1.0×</span></div>
+</section>
+<div class="detail-row">
+<section aria-labelledby="timeline-heading" class="timeline-section"><div class="timeline-head"><div><h2 data-i18n="s179" id="timeline-heading">активность по времени</h2><p data-i18n="s198">выберите период, чтобы посмотреть его на карте</p></div><button class="text-button" data-i18n="s199" hidden="" id="reset-period" type="button">весь период</button></div><div class="timeline-frame"><svg aria-labelledby="timeline-heading" id="timeline-svg" role="group" viewbox="0 0 1200 170"><g id="timeline-layer"></g></svg><p class="timeline-empty" data-i18n="s40" id="timeline-empty">загрузите экспорт, чтобы увидеть периоды активности.</p></div><div class="timeline-range mono" id="timeline-range">-</div></section>
+</div>
+<details class="text-description"><summary data-i18n="s200">текстовое описание карты</summary><div class="alt-text" data-i18n="s34" id="alt-text">загрузите файл, чтобы получить текстовое описание сети.</div></details>
+</div>
+</div>
+</div>
+</main>
+<footer class="site-footer"><p data-i18n="s201">тексты сообщений не выводятся. данные хранятся только в памяти открытой страницы.</p><span><span data-i18n="s202">сделано, чтобы видеть связи</span> <span aria-hidden="true">✳</span></span></footer>
+</div>
+<dialog aria-labelledby="help-title" class="help-dialog" id="help-dialog"><div class="dialog-head"><h2 data-i18n="s203" id="help-title">как получить архив telegram</h2><button aria-label="закрыть инструкцию" class="icon-button" data-close-dialog="help-dialog" data-i18n-aria-label="s145" type="button">×</button></div><p data-i18n="s204">нужна версия telegram desktop для компьютера.</p><ol class="help-steps"><li><span data-i18n="s205">откройте настройки</span><p data-i18n="s206">перейдите в «продвинутые настройки» → «экспорт данных из telegram».</p></li><li><span data-i18n="s207">выберите переписки</span><p data-i18n="s208">отметьте нужные чаты. для карты достаточно сообщений. фото и видео можно не включать.</p></li><li><span data-i18n="s209">сохраните в json</span><p><span data-i18n="s210">в формате экспорта выберите машиночитаемый json. после завершения найдите</span> <code>result.json</code> <span data-i18n="s211">в папке экспорта.</span></p></li></ol><div class="dialog-note" data-i18n="s212">можно экспортировать и один чат: откройте его меню → «экспорт истории чата» → json.</div><button class="button button--primary" data-close-dialog="help-dialog" data-i18n="s213" type="button">понятно</button></dialog>
+<dialog aria-labelledby="legend-heading" class="help-dialog" id="legend-dialog"><div class="dialog-head"><h2 data-i18n="s196" id="legend-heading">как читать карту</h2><button aria-label="закрыть легенду" class="icon-button" data-close-dialog="legend-dialog" data-i18n-aria-label="s146" type="button">×</button></div><p data-i18n="s214">каждая точка обозначает чат или участника. чем больше сообщений, тем крупнее точка. коралловый цвет выделяет самые активные узлы.</p><div class="legend-list"><div class="legend-item"><span class="legend-line legend-line--reply"></span><span data-i18n="s215">ответы на сообщения</span></div><div class="legend-item"><span class="legend-line legend-line--mention"></span><span data-i18n="s216">упоминания участников</span></div><div class="legend-item"><span class="legend-line legend-line--shared"></span><span data-i18n="s76">общие чаты</span></div><div class="legend-item"><span class="legend-line legend-line--time"></span><span data-i18n="s217">сообщения рядом по времени</span></div></div><div class="dialog-note" data-i18n="s218">нажмите на точку, чтобы выделить её связи. колесо меняет масштаб, перетаскивание двигает карту. с клавиатуры: tab открывает карту, стрелки перемещают фокус между точками, enter выбирает точку, esc снимает выбор.</div><button class="button button--primary" data-close-dialog="legend-dialog" data-i18n="s219" type="button">к карте</button></dialog>
+<script src="app.js" type="module"></script>
 </body>
 </html>

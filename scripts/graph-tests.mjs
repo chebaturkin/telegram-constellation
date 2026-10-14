@@ -1,3 +1,5 @@
+import { setLocale } from '../i18n.js';
+setLocale('ru');
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { getNeighbors, relationNamesFor } from '../app-graph.js';

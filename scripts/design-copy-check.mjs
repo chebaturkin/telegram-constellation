@@ -24,7 +24,8 @@ for (const file of files) {
   for (const match of content.matchAll(/telegram constellation/gi)) if (match[0] !== 'telegram constellation') hits.push(`${file}: название продукта должно быть строчным`);
   for (const phrase of forbidden) if (content.includes(phrase)) hits.push(`${file}: ${phrase}`);
   if (file === 'index.html') {
-    for (const phrase of required) if (!content.includes(phrase)) hits.push(`${file}: пропущен обязательный текст «${phrase}»`);
+    const authoredMarkup = content.replace(/ data-i18n(?:-[a-z-]+)?="[^"]*"/g, '');
+    for (const phrase of required) if (!authoredMarkup.includes(phrase)) hits.push(`${file}: пропущен обязательный текст «${phrase}»`);
   }
 }
 for (const file of ['README.md', 'AGENT_PROMPT.md', 'docs/DESIGN-RULES.md']) {

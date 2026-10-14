@@ -20,7 +20,7 @@ class MotionJourneys(unittest.TestCase):
         cls.playwright.stop()
 
     def setUp(self):
-        self.page = self.browser.new_page(viewport={"width": 1440, "height": 1000})
+        self.page = self.browser.new_page(locale="ru-RU", viewport={"width": 1440, "height": 1000})
         self.page.goto(URL)
         self.page.wait_for_load_state("networkidle")
         self.page.locator("#open-demo").click()

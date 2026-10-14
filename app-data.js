@@ -1,3 +1,4 @@
+import { t, getLocale, localeTag, mountLocale, translateMessage, setLocale } from './i18n.js';
 /**
  * Aggregate-only Telegram export parser. Message bodies are inspected transiently
  * while deriving relationships and are never stored in the returned model.
@@ -22,7 +23,7 @@ const parseInput = (input) => {
   try {
     return JSON.parse(input);
   } catch {
-    throw new ExportFormatError('не удалось прочитать json. выберите исходный result.json из telegram desktop.', 'INVALID_JSON');
+    throw new ExportFormatError(t("s91"), 'INVALID_JSON');
   }
 };
 
@@ -71,7 +72,7 @@ const normalizedDateFields = (message) => {
   return { date: null, dateKey: null };
 };
 const idOf = (value, fallback) => value === undefined || value === null || value === '' ? fallback : String(value);
-const labelOf = (value, fallback) => String(value || fallback || 'без имени').replace(/\s+/g, ' ').trim().slice(0, 80) || 'без имени';
+const labelOf = (value, fallback) => String(value || fallback || t("s0")).replace(/\s+/g, ' ').trim().slice(0, 80) || t("s0");
 const normalizedId = (value) => String(value ?? '').replace(/^user[-_]?/i, '');
 const entityList = (message) => [
   ...asArray(message?.entities),
@@ -118,11 +119,11 @@ const lowerBound = (values, target) => {
 function extractChats(input) {
   const parsed = parseInput(input);
   const root = parsed?.result && typeof parsed.result === 'object' ? parsed.result : parsed;
-  if (Array.isArray(root)) return [{ id: 'chat-1', name: 'экспорт сообщений', type: 'personal', messages: root }];
+  if (Array.isArray(root)) return [{ id: 'chat-1', get name() { return t("s92"); }, type: 'personal', messages: root }];
   const list = asArray(root?.chats?.list).filter(isRecord);
-  if (list.length) return list.map((chat, index) => ({ ...chat, id: idOf(chat.id, `chat-${index + 1}`), name: labelOf(chat.name || chat.title, `чат ${index + 1}`), messages: asArray(chat.messages) }));
-  if (Array.isArray(root?.messages)) return [{ ...root, id: idOf(root.id, 'chat-1'), name: labelOf(root.name || root.title, 'экспорт сообщений'), messages: root.messages }];
-  if (isRecord(root?.chat) && Array.isArray(root.chat.messages)) return [{ ...root.chat, id: idOf(root.chat.id, 'chat-1'), name: labelOf(root.chat.name || root.chat.title, 'экспорт сообщений'), messages: root.chat.messages }];
+  if (list.length) return list.map((chat, index) => ({ ...chat, id: idOf(chat.id, `chat-${index + 1}`), name: labelOf(chat.name || chat.title, t("s93", { p0: index + 1 })), messages: asArray(chat.messages) }));
+  if (Array.isArray(root?.messages)) return [{ ...root, id: idOf(root.id, 'chat-1'), name: labelOf(root.name || root.title, t("s92")), messages: root.messages }];
+  if (isRecord(root?.chat) && Array.isArray(root.chat.messages)) return [{ ...root.chat, id: idOf(root.chat.id, 'chat-1'), name: labelOf(root.chat.name || root.chat.title, t("s92")), messages: root.chat.messages }];
   return [];
 }
 
@@ -133,7 +134,7 @@ function buildNodes(chats, messageRecords) {
     const personId = String(record.senderId || 'unknown-sender');
     const person = people.get(personId) || { id: personId, label: labelOf(record.senderName, personId), username: record.senderUsername || null, type: 'participant', chatIds: new Set(), messageCount: 0, dates: [] };
     const candidateLabel = labelOf(record.senderName, personId);
-    if ((person.label === personId || person.label === 'без имени') && candidateLabel !== personId) person.label = candidateLabel;
+    if ((person.label === personId || person.label === t("s0")) && candidateLabel !== personId) person.label = candidateLabel;
     if (!person.username && record.senderUsername) person.username = record.senderUsername;
     person.chatIds.add(record.chatId); person.messageCount += 1; if (record.date) person.dates.push(record.date); people.set(personId, person);
   });
@@ -311,7 +312,7 @@ export function normalizeModel(input, options = {}) {
   const parsed = parseInput(input);
   const onProgress = typeof options.onProgress === 'function' ? options.onProgress : () => {};
   const chats = extractChats(parsed);
-  if (!chats.length) throw new ExportFormatError('файл прочитан, но в нём не найдены чаты или сообщения telegram desktop.', 'UNSUPPORTED_FORMAT');
+  if (!chats.length) throw new ExportFormatError(t("s94"), 'UNSUPPORTED_FORMAT');
   const records = [];
   let skippedCount = 0;
   const total = chats.reduce((count, chat) => count + asArray(chat.messages).length, 0);
@@ -345,7 +346,7 @@ export function normalizeModel(input, options = {}) {
     }
     try { onProgress({ phase: 'normalizing', processed, total: Math.max(total, 1), ratio: Math.min(1, processed / Math.max(total, 1)) }); } catch { /* a UI callback cannot invalidate data */ }
   }));
-  if (!records.length) throw new ExportFormatError('в файле не найдено сообщений. нужен экспорт telegram desktop с массивом messages.', 'NO_MESSAGES');
+  if (!records.length) throw new ExportFormatError(t("s51"), 'NO_MESSAGES');
   const model = modelFromRecords(chats, records, options.mode, { skippedCount });
   try { onProgress({ phase: 'complete', processed: 1, total: 1, ratio: 1 }); } catch { /* progress is advisory */ }
   return model;

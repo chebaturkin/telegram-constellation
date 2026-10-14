@@ -1,12 +1,13 @@
+import { t, getLocale, localeTag, mountLocale, translateMessage, setLocale } from './i18n.js';
 // Fictional names and generated messages. No network or saved user data.
 export function createDemoExport() {
-  const names = ['Мария', 'Алексей', 'Софья', 'Денис', 'Анна', 'Михаил', 'Ольга', 'Иван'];
+  const names = [t("s110"), t("s111"), t("s112"), t("s113"), t("s114"), t("s115"), t("s116"), t("s117")];
   const chats = [
-    ['дизайн команды', [0, 1, 2, 3]],
-    ['идеи и находки', [0, 2, 4, 5]],
-    ['друзья', [0, 4, 6, 7]],
-    ['планы на выходные', [1, 3, 6, 7]],
-    ['рабочие заметки', [0, 1, 5]],
+    [t("s118"), [0, 1, 2, 3]],
+    [t("s119"), [0, 2, 4, 5]],
+    [t("s120"), [0, 4, 6, 7]],
+    [t("s121"), [1, 3, 6, 7]],
+    [t("s122"), [0, 1, 5]],
   ];
   return { chats: { list: chats.map(([name, people], chatIndex) => {
     const messages = [];

@@ -1,70 +1,74 @@
 # telegram constellation
 
-карта чатов, участников и активности из локального экспорта telegram. найдите нужное имя, посмотрите связи и сравните периоды. файл остаётся в браузере.
+english · [русский](README.ru.md)
 
-[открыть карту ↗](https://chebaturkin.github.io/telegram-constellation/)
+a map of chats, participants and activity from a local telegram export. find a name, explore connections and compare periods. your file stays in the browser.
 
-![карта telegram constellation с выбранной Марией, списком участников и активностью по месяцам](docs/screenshots/atlas.png)
+[open the map ↗](https://chebaturkin.github.io/telegram-constellation/?lang=en) · [открыть по-русски](https://chebaturkin.github.io/telegram-constellation/?lang=ru)
 
-## как пользоваться
+![telegram constellation with Maria selected, the participant list and monthly activity](docs/screenshots/en/atlas.png)
 
-1. откройте вымышленный пример или выберите `result.json`. файл также можно перетащить в область загрузки.
-2. переключайтесь между чатами и участниками. размер точки показывает число сообщений, коралловый цвет выделяет высокую активность.
-3. нажмите на точку или найдите имя в списке. над картой появятся детали, а связанные точки останутся выделенными. список связанных узлов позволяет перейти к соседнему участнику или чату.
-4. раскройте фильтры для выбора чата, участника, дат или типов связей. можно оставить ответы и упоминания, убрав общие чаты и близость по времени. на шкале можно выбрать месяц; повторный выбор снимает период.
-5. скачайте текущую карту в svg или png. «удалить данные» очищает страницу и возвращает первый экран.
+## using the map
 
-«как получить архив» объясняет экспорт из telegram desktop. «как читать карту» открывает легенду и подсказки по клавиатуре.
+1. open the fictional example or choose `result.json`. you can also drop the file into the upload area.
+2. switch between chats and participants. point size represents message count; coral marks high activity.
+3. select a point or find a name in the list. its details appear above the map and its connections stay highlighted. the connected-node list lets you move to a neighbouring chat or participant.
+4. expand the filters to choose a chat, participant, dates or connection types. keep replies and mentions while hiding shared chats and proximity in time. choose a month on the timeline; choose it again to clear the period.
+5. download the current map as svg or png. “delete data” clears the page and returns to the welcome screen.
+
+“how to export an archive” explains the telegram desktop export. “how to read the map” opens the legend and keyboard instructions.
+
+choose **ru / en** in the header to switch without reloading. the map, filters and search remain in place. a valid `?lang=ru` or `?lang=en` takes priority, followed by the saved choice, the first supported browser language and english. names from your own export stay untouched.
 
 <details>
-<summary>первый экран и карта на телефоне</summary>
+<summary>welcome screen and the map on a phone</summary>
 
-первый экран предлагает загрузить файл, открыть пример или прочитать инструкцию. все имена и разговоры в примере вымышлены.
+the welcome screen offers a file upload, an example and export instructions. every name and conversation in the example is fictional.
 
-![первый экран telegram constellation с загрузкой архива и кнопкой открытия примера](docs/screenshots/welcome.png)
+![welcome screen with archive upload and the example button](docs/screenshots/en/welcome.png)
 
-на телефоне карта, фильтры и детали располагаются в одну колонку. подписи и области нажатия адаптируются к экрану.
+on a phone, the map, filters and details form one column. labels and tap areas adapt to the screen.
 
-<img src="docs/screenshots/mobile.png" alt="мобильный интерфейс telegram constellation с картой и деталями участника" width="390" />
+<img src="docs/screenshots/en/mobile.png" alt="mobile map with the selected participant's details" width="390" />
 
 </details>
 
-## данные и приватность
+## data and privacy
 
-- файл читается через браузерный file api и не отправляется на сервер;
-- импорт работает без telegram api, аккаунта, аналитики и внешних моделей;
-- тексты сообщений не сохраняются в модели, адресе страницы, логах и скачанной карте;
-- после разбора остаются имена, даты, счётчики, идентификаторы и типы связей. скачанная карта содержит имена видимых узлов;
-- данные хранятся только в памяти открытой страницы. перезагрузка или удаление данных очищает карту;
-- ошибка нового импорта и отмена сохраняют уже открытую карту;
-- шрифты и вымышленный пример находятся в репозитории. сторонние ресурсы при работе карты не загружаются.
+- the browser file api reads the file locally; it is not uploaded;
+- import needs no telegram api, account, analytics or external model;
+- message text is excluded from the model, page address, logs and downloaded map;
+- parsing retains names, dates, counts, ids and connection types. downloaded maps include visible node names;
+- data stays in the memory of the open page. reloading or deleting data clears the map;
+- a failed or cancelled import keeps the map already open;
+- fonts and the fictional example are included in the repository. the map loads no third-party resources.
 
-## поддержка и ограничения
+## support and limits
 
-поддерживаются экспорт с несколькими чатами в `{ "chats": { "list": [...] } }`, один объект чата с `messages` и массив сообщений с полями отправителя, дат, ответов и упоминаний.
+supported inputs include a multi-chat export in `{ "chats": { "list": [...] } }`, one chat object with `messages`, or an array of messages with sender, date, reply and mention fields.
 
-карта строит связи по ответам, упоминаниям, общим чатам для участников, общим участникам для чатов и близости по времени. несколько типов связи могут соединять одну пару точек. общие чаты, участники и близость по времени дают косвенные признаки связи; они не подтверждают прямой разговор.
+connections come from replies, mentions, shared chats between participants, shared participants between chats and proximity in time. several connection types can join the same pair. shared chats, participants and proximity provide indirect signs of a connection; they do not confirm a direct conversation.
 
-в режиме «авто» смешанный экспорт открывает чаты, а один чат открывает участников. переключатель позволяет изменить слой. шкала показывает месяцы для выбранного чата или участника и сохраняет контекст при выборе дат.
+“auto” opens chats for a mixed export and participants for a single chat. the mode control changes the layer. the timeline shows months for the selected chat or participant and retains that context while dates change.
 
-файл читается целиком в браузере, предел составляет **250 мб**. zip-архив сначала нужно распаковать локально и выбрать `result.json`. пустые и повреждённые записи пропускаются. сообщения без корректной даты учитываются в общем количестве, но не попадают на шкалу; выбор периода исключает их из карты. если подходящих сообщений не осталось, интерфейс объясняет ошибку и сохраняет предыдущую карту.
+the whole file is read in the browser, with a **250 mb** limit. unpack zip files locally first and choose `result.json`. empty and damaged records are skipped. messages without a valid date count toward the total but do not appear on the timeline; choosing a period excludes them from the map. if no usable messages remain, the app explains the error and keeps the previous map.
 
-выбор точки отмечается контуром, а импульс проходит к её соседям. фильтры сохраняют места знакомых точек. при системной настройке уменьшения движения анимации отключаются; выбор остаётся понятным по контуру и тексту. svg и png содержат конечное состояние без временной графики.
+selection has an outline and sends a pulse toward neighbours. filters retain familiar point positions. reduced motion disables animations while the outline and text keep selection clear. svg and png contain the final state without temporary effects.
 
-## запустить локально
+## run locally
 
-из корня проекта, без сборки и установки зависимостей:
+from the project root, with no build or dependency installation:
 
 ```bash
 python3 -m http.server 4175
 ```
 
-откройте [локальную карту](http://127.0.0.1:4175/). сервер раздаёт статические файлы; обработка архива происходит в браузере.
+open the [local map](http://127.0.0.1:4175/). the server serves static files; the browser processes the archive.
 
-## проверки и снимки
+## checks and captures
 
 ```bash
-node --test scripts/data-tests.mjs scripts/graph-tests.mjs
+node --test scripts/data-tests.mjs scripts/graph-tests.mjs scripts/i18n.test.mjs
 node scripts/design-copy-check.mjs
 APP_PORT=4175 python3 scripts/smoke_test.py
 APP_PORT=4175 python3 scripts/interaction_test.py
@@ -72,20 +76,22 @@ APP_PORT=4175 python3 scripts/redesign_test.py
 APP_PORT=4175 python3 scripts/selection_test.py
 APP_PORT=4175 python3 scripts/exploration_test.py
 APP_PORT=4175 python3 scripts/motion_test.py
+APP_URL=http://127.0.0.1:4175/ python3 scripts/verify-i18n.py
 ```
 
-браузерные проверки и скриншоты используют python playwright и chromium:
+browser checks and screenshots use python playwright and chromium:
 
 ```bash
 python3 -m pip install playwright
 python3 -m playwright install chromium
 APP_PORT=4175 python3 scripts/capture_screenshots.py
+APP_URL=http://127.0.0.1:4175/ python3 scripts/capture-bilingual.py
 ```
 
-сценарии проверяют импорт, ошибки, пример, поиск, выбор узла, слои, даты, экспорт, очистку, отсутствие сторонних запросов, клавиатуру и ширины 320, 375, 768 и 1440 px. скриншоты в `docs/screenshots/` сняты с работающего приложения в chromium на вымышленных данных.
+checks cover import, errors, the example, search, selection, layers, dates, export, clearing, external requests, keyboard input, language defaults and switching, and 320 to 1440 px layouts. screenshots in `docs/screenshots/` and `docs/screenshots/en/` show the running app with fictional data.
 
-## устройство
+## source
 
-`app-data.js` отвечает за разбор экспорта, нормализацию, связи и фильтрацию. `import-worker.js` обрабатывает импорт в отдельном потоке. `demo-data.js` создаёт вымышленный пример локально. `app-motion.js` управляет анимациями, `app-graph.js` и `app-exploration.js` формируют список связанных узлов и пояснения об импорте.
+`app-data.js` parses, normalizes, connects and filters exports. `import-worker.js` processes imports in a worker. `demo-data.js` creates the fictional example locally. `app-motion.js` controls animation; `app-graph.js` and `app-exploration.js` build connected-node lists and import explanations. `i18n.js` contains local dictionaries and locale selection.
 
-дополнительные материалы: [визуальные правила](docs/DESIGN-RULES.md), [проверки](docs/QA-CHECKLIST.md), [источники и лицензии шрифтов](assets/fonts/SOURCES.md), [исследование аналогов](docs/2026-10-14-research-and-improvements.md).
+further notes: [visual rules](docs/DESIGN-RULES.md), [checks](docs/QA-CHECKLIST.md), [font sources and licences](assets/fonts/SOURCES.md), [research and improvements](docs/2026-10-14-research-and-improvements.md).

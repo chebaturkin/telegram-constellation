@@ -9,7 +9,7 @@ PORT = os.environ.get("APP_PORT", "4178")
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
-    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    page = browser.new_page(locale="ru-RU", viewport={"width": 1440, "height": 1000})
     page.goto(f"http://127.0.0.1:{PORT}/index.html")
     page.wait_for_load_state("networkidle")
     page.locator("#file-input").set_input_files(str(FIXTURE))

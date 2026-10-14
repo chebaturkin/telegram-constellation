@@ -10,7 +10,7 @@ OUTPUT.mkdir(parents=True, exist_ok=True)
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
-    page = browser.new_page(viewport={'width': 1440, 'height': 1000}, device_scale_factor=1)
+    page = browser.new_page(locale="ru-RU", viewport={'width': 1440, 'height': 1000}, device_scale_factor=1)
     page.goto(f'http://127.0.0.1:{PORT}/')
     page.wait_for_load_state('networkidle')
     page.evaluate('document.fonts.ready')
@@ -22,7 +22,7 @@ with sync_playwright() as p:
     page.evaluate("document.activeElement.blur(); window.scrollTo({top: 0, behavior: 'instant'})")
     page.screenshot(path=str(OUTPUT / 'atlas.png'), full_page=True)
     page.close()
-    mobile = browser.new_page(viewport={'width': 390, 'height': 844}, device_scale_factor=1, is_mobile=True, has_touch=True)
+    mobile = browser.new_page(locale="ru-RU", viewport={'width': 390, 'height': 844}, device_scale_factor=1, is_mobile=True, has_touch=True)
     mobile.goto(f'http://127.0.0.1:{PORT}/')
     mobile.wait_for_load_state('networkidle')
     mobile.locator('#open-demo').click()
