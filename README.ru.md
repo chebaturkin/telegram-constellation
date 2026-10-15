@@ -2,13 +2,13 @@
 
 # telegram constellation
 
-карта чатов, участников и активности из локального экспорта telegram. найдите нужное имя, посмотрите связи и сравните периоды. файл остаётся в браузере.
+изучайте чаты, участников и активность из локального экспорта telegram. найдите нужное имя, посмотрите его связи и сравните периоды на карте. можно начать с вымышленного примера или выбрать свой `result.json`. файл остаётся в браузере.
 
-[открыть карту ↗](https://chebaturkin.github.io/telegram-constellation/?lang=ru)
+[открыть по-русски ↗](https://chebaturkin.github.io/telegram-constellation/?lang=ru) · [открыть по-английски](https://chebaturkin.github.io/telegram-constellation/?lang=en)
 
 ![карта telegram constellation с выбранной Марией, списком участников и активностью по месяцам](docs/screenshots/atlas.png)
 
-язык переключается кнопками **ru / en** в шапке без перезагрузки и потери черновиков. параметр `?lang=ru` или `?lang=en` важнее сохранённого выбора, затем учитывается первый поддерживаемый язык браузера. по умолчанию используется английский. ваши тексты и импортированные данные сохраняют исходный язык.
+язык переключается кнопками **ru / en** в шапке без перезагрузки. карта, фильтры и поиск остаются на месте. параметр `?lang=ru` или `?lang=en` важнее сохранённого выбора, затем учитывается первый поддерживаемый язык браузера. по умолчанию используется английский. имена из вашего экспорта сохраняют исходное написание.
 
 ## как пользоваться
 
@@ -63,33 +63,44 @@
 python3 -m http.server 4175
 ```
 
-откройте [локальную карту](http://127.0.0.1:4175/). сервер раздаёт статические файлы; обработка архива происходит в браузере.
+откройте локальную карту [по-русски](http://127.0.0.1:4175/?lang=ru) или [по-английски](http://127.0.0.1:4175/?lang=en). сервер раздаёт статические файлы; обработка архива происходит в браузере.
 
 ## проверки и снимки
 
+node.js запускает проверки данных, графа, выбора языка и интерфейсных текстов:
+
 ```bash
-node --test scripts/data-tests.mjs scripts/graph-tests.mjs
+node --test scripts/data-tests.mjs scripts/graph-tests.mjs scripts/i18n.test.mjs
 node scripts/design-copy-check.mjs
+```
+
+браузерные проверки используют python playwright и chromium. оставьте локальный сервер работать:
+
+```bash
+python3 -m pip install playwright
+python3 -m playwright install chromium
 APP_PORT=4175 python3 scripts/smoke_test.py
 APP_PORT=4175 python3 scripts/interaction_test.py
 APP_PORT=4175 python3 scripts/redesign_test.py
 APP_PORT=4175 python3 scripts/selection_test.py
 APP_PORT=4175 python3 scripts/exploration_test.py
 APP_PORT=4175 python3 scripts/motion_test.py
+APP_URL=http://127.0.0.1:4175/ python3 scripts/verify-i18n.py
+APP_URL=http://127.0.0.1:4175/ python3 scripts/verify-export-snapshot.py
 ```
 
-браузерные проверки и скриншоты используют python playwright и chromium:
+сценарии проверяют импорт, ошибки, пример, поиск, выбор узла, слои, даты, экспорт, очистку, отсутствие сторонних запросов, клавиатуру, выбор и переключение языка, ширины от 320 до 1440 px. отдельная проверка экспорта подтверждает, что смена языка во время декодирования png отменяет устаревшее скачивание и позволяет повторить его на выбранном языке.
+
+обновить первый экран, выбранную карту и мобильный вид на двух языках:
 
 ```bash
-python3 -m pip install playwright
-python3 -m playwright install chromium
-APP_PORT=4175 python3 scripts/capture_screenshots.py
+APP_URL=http://127.0.0.1:4175/ python3 scripts/capture-bilingual.py
 ```
 
-сценарии проверяют импорт, ошибки, пример, поиск, выбор узла, слои, даты, экспорт, очистку, отсутствие сторонних запросов, клавиатуру и ширины 320, 375, 768 и 1440 px. скриншоты в `docs/screenshots/` сняты с работающего приложения в chromium на вымышленных данных.
+русские скриншоты находятся в `docs/screenshots/`, английские в `docs/screenshots/en/`. обе версии сняты с работающего приложения на вымышленных данных с именами на соответствующем языке.
 
 ## устройство
 
-`app-data.js` отвечает за разбор экспорта, нормализацию, связи и фильтрацию. `import-worker.js` обрабатывает импорт в отдельном потоке. `demo-data.js` создаёт вымышленный пример локально. `app-motion.js` управляет анимациями, `app-graph.js` и `app-exploration.js` формируют список связанных узлов и пояснения об импорте.
+`app-data.js` отвечает за разбор экспорта, нормализацию, связи и фильтрацию. `import-worker.js` обрабатывает импорт в отдельном потоке. `demo-data.js` создаёт вымышленный пример локально. `app-motion.js` управляет анимациями, `app-graph.js` и `app-exploration.js` формируют список связанных узлов и пояснения об импорте. `i18n.js` содержит словари и выбор языка.
 
-дополнительные материалы: [визуальные правила](docs/DESIGN-RULES.md), [проверки](docs/QA-CHECKLIST.md), [источники и лицензии шрифтов](assets/fonts/SOURCES.md), [исследование аналогов](docs/2026-10-14-research-and-improvements.md).
+[визуальные правила](docs/DESIGN-RULES.md) описывают устройство интерфейса, [источники и лицензии шрифтов](assets/fonts/SOURCES.md) сохранены рядом с файлами. github pages публикует ветку `main` через [workflow](.github/workflows/pages.yml).

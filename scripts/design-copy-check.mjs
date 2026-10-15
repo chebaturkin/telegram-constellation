@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = resolve(new URL('..', import.meta.url).pathname);
+const root = fileURLToPath(new URL('..', import.meta.url));
 const files = ['index.html', 'app.js', 'styles.css', 'import-worker.js', 'app-exploration.js', 'app-graph.js', 'app-motion.js', 'demo-data.js'];
 const forbidden = [
   ['LOCAL', 'ARCHIVE'].join(' '), ['01', 'IMPORT'].join(' / '), ['02', 'VIEW'].join(' / '),
@@ -28,7 +29,7 @@ for (const file of files) {
     for (const phrase of required) if (!authoredMarkup.includes(phrase)) hits.push(`${file}: пропущен обязательный текст «${phrase}»`);
   }
 }
-for (const file of ['README.md', 'AGENT_PROMPT.md', 'docs/DESIGN-RULES.md']) {
+for (const file of ['README.md', 'README.ru.md', 'docs/DESIGN-RULES.md']) {
   const content = readFileSync(resolve(root, file), 'utf8');
   for (const match of content.matchAll(/telegram constellation/gi)) if (match[0] !== 'telegram constellation') hits.push(`${file}: название продукта должно быть строчным`);
 }

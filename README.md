@@ -1,10 +1,10 @@
+**english** · [русский](README.ru.md)
+
 # telegram constellation
 
-english · [русский](README.ru.md)
+explore chats, participants and activity in a local telegram export. find a name, follow its connections and compare periods on the map. open the fictional example to see how it works, or choose your own `result.json`. your file stays in the browser.
 
-a map of chats, participants and activity from a local telegram export. find a name, explore connections and compare periods. your file stays in the browser.
-
-[open the map ↗](https://chebaturkin.github.io/telegram-constellation/?lang=en) · [открыть по-русски](https://chebaturkin.github.io/telegram-constellation/?lang=ru)
+[open in english ↗](https://chebaturkin.github.io/telegram-constellation/?lang=en) · [open in russian](https://chebaturkin.github.io/telegram-constellation/?lang=ru)
 
 ![telegram constellation with Maria selected, the participant list and monthly activity](docs/screenshots/en/atlas.png)
 
@@ -63,13 +63,22 @@ from the project root, with no build or dependency installation:
 python3 -m http.server 4175
 ```
 
-open the [local map](http://127.0.0.1:4175/). the server serves static files; the browser processes the archive.
+open the local map in [english](http://127.0.0.1:4175/?lang=en) or [russian](http://127.0.0.1:4175/?lang=ru). the server serves static files; the browser processes the archive.
 
 ## checks and captures
+
+node.js runs the data, graph, language and interface-copy checks:
 
 ```bash
 node --test scripts/data-tests.mjs scripts/graph-tests.mjs scripts/i18n.test.mjs
 node scripts/design-copy-check.mjs
+```
+
+browser checks use python playwright and chromium. keep the local server running:
+
+```bash
+python3 -m pip install playwright
+python3 -m playwright install chromium
 APP_PORT=4175 python3 scripts/smoke_test.py
 APP_PORT=4175 python3 scripts/interaction_test.py
 APP_PORT=4175 python3 scripts/redesign_test.py
@@ -77,21 +86,21 @@ APP_PORT=4175 python3 scripts/selection_test.py
 APP_PORT=4175 python3 scripts/exploration_test.py
 APP_PORT=4175 python3 scripts/motion_test.py
 APP_URL=http://127.0.0.1:4175/ python3 scripts/verify-i18n.py
+APP_URL=http://127.0.0.1:4175/ python3 scripts/verify-export-snapshot.py
 ```
 
-browser checks and screenshots use python playwright and chromium:
+checks cover import, errors, the example, search, selection, layers, dates, export, clearing, external requests, keyboard input, language defaults and switching, and 320 to 1440 px layouts. the export regression confirms that changing language during png decoding cancels the obsolete download and allows a new one in the selected language.
+
+refresh the welcome screen, selected map and mobile map in both languages:
 
 ```bash
-python3 -m pip install playwright
-python3 -m playwright install chromium
-APP_PORT=4175 python3 scripts/capture_screenshots.py
 APP_URL=http://127.0.0.1:4175/ python3 scripts/capture-bilingual.py
 ```
 
-checks cover import, errors, the example, search, selection, layers, dates, export, clearing, external requests, keyboard input, language defaults and switching, and 320 to 1440 px layouts. screenshots in `docs/screenshots/` and `docs/screenshots/en/` show the running app with fictional data.
+russian captures are in `docs/screenshots/`; english captures are in `docs/screenshots/en/`. both use the running app and fictional data, with names translated for each language.
 
 ## source
 
 `app-data.js` parses, normalizes, connects and filters exports. `import-worker.js` processes imports in a worker. `demo-data.js` creates the fictional example locally. `app-motion.js` controls animation; `app-graph.js` and `app-exploration.js` build connected-node lists and import explanations. `i18n.js` contains local dictionaries and locale selection.
 
-further notes: [visual rules](docs/DESIGN-RULES.md), [checks](docs/QA-CHECKLIST.md), [font sources and licences](assets/fonts/SOURCES.md), [research and improvements](docs/2026-10-14-research-and-improvements.md).
+the [visual guide](docs/DESIGN-RULES.md) describes the interface conventions; [font sources and licences](assets/fonts/SOURCES.md) are kept with the fonts. github pages publishes `main` through the [workflow](.github/workflows/pages.yml).
